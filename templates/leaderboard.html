@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leaderboard - PosePro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <style>
+      .leaderboard-tabs {
+        display: flex;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-xl);
+        background: rgba(0, 0, 0, 0.3);
+        padding: var(--space-sm);
+        border-radius: var(--radius-xl);
+        width: fit-content;
+      }
+
+      .tab-btn {
+        padding: var(--space-md) var(--space-xl);
+        background: transparent;
+        border: none;
+        color: var(--gray-400);
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all var(--transition-base);
+      }
+
+      .tab-btn:hover {
+        color: var(--gray-200);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .tab-btn.active {
+        background: var(--gradient-primary);
+        color: var(--gray-900);
+      }
+
+      .leaderboard-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+        padding: var(--space-lg) var(--space-xl);
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-md);
+        transition: all var(--transition-base);
+      }
+
+      .leaderboard-row:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateX(4px);
+      }
+
+      .leaderboard-row.current-user {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      .leaderboard-row.top-1 {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 215, 0, 0.1) 0%,
+          rgba(255, 215, 0, 0.05) 100%
+        );
+        border: 1px solid rgba(255, 215, 0, 0.3);
+      }
+
+      .leaderboard-row.top-2 {
+        background: linear-gradient(
+          135deg,
+          rgba(192, 192, 192, 0.1) 0%,
+          rgba(192, 192, 192, 0.05) 100%
+        );
+        border: 1px solid rgba(192, 192, 192, 0.3);
+      }
+
+      .leaderboard-row.top-3 {
+        background: linear-gradient(
+          135deg,
+          rgba(205, 127, 50, 0.1) 0%,
+          rgba(205, 127, 50, 0.05) 100%
+        );
+        border: 1px solid rgba(205, 127, 50, 0.3);
+      }
+
+      .rank-display {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 800;
+        border-radius: var(--radius-full);
+        flex-shrink: 0;
+      }
+
+      .rank-1 {
+        background: linear-gradient(135deg, #ffd700, #ffa500);
+        color: var(--gray-900);
+      }
+      .rank-2 {
+        background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
+        color: var(--gray-900);
+      }
+      .rank-3 {
+        background: linear-gradient(135deg, #cd7f32, #8b4513);
+        color: white;
+      }
+      .rank-default {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--gray-300);
+      }
+
+      .user-avatar-small {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+      }
+
+      .user-info {
+        flex: 1;
+      }
+
+      .user-name {
+        font-weight: 600;
+        color: var(--gray-100);
+        font-size: 1.1rem;
+      }
+
+      .user-meta {
+        font-size: 0.85rem;
+        color: var(--gray-500);
+      }
+
+      .score-display {
+        text-align: right;
+      }
+
+      .score-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--primary-400);
+      }
+
+      .score-label {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+      }
+
+      .your-position {
+        padding: var(--space-xl);
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.15) 0%,
+          rgba(59, 130, 246, 0.15) 100%
+        );
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--space-xl);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .your-position-info {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+      }
+
+      .your-rank-big {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary-400);
+      }
+
+      .empty-leaderboard {
+        text-align: center;
+        padding: var(--space-3xl);
+        color: var(--gray-400);
+      }
+
+      .empty-leaderboard-icon {
+        font-size: 4rem;
+        margin-bottom: var(--space-lg);
+      }
+
+      .trophy-icons {
+        font-size: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">
+          <div class="navbar-logo">💪</div>
+          <span class="navbar-title">Pose<span>Pro</span></span>
+        </a>
+        <ul class="navbar-nav">
+          <li>
+            <a href="/" class="nav-link"
+              ><span class="nav-link-icon">🏠</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="/camera" class="nav-link"
+              ><span class="nav-link-icon">📷</span> Live Analysis</a
+            >
+          </li>
+          <li>
+            <a href="/dashboard" class="nav-link"
+              ><span class="nav-link-icon">📊</span> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/leaderboard" class="nav-link active"
+              ><span class="nav-link-icon">🏆</span> Leaderboard</a
+            >
+          </li>
+          <li>
+            <a href="/profile" class="nav-link"
+              ><span class="nav-link-icon">👤</span> Profile</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Page Header -->
+      <div class="flex justify-between items-center mb-xl">
+        <div>
+          <h1 class="text-gradient mb-sm">🏆 Leaderboard</h1>
+          <p class="text-muted">
+            Compete with other athletes and climb the rankings!
+          </p>
+        </div>
+        <a href="/camera" class="btn btn-primary">
+          <span>🚀</span> Improve Your Rank
+        </a>
+      </div>
+
+      <!-- Your Position Card -->
+      <div class="your-position" id="your-position">
+        <div class="your-position-info">
+          <div class="your-rank-big" id="your-rank">#--</div>
+          <div>
+            <h3 class="text-white">Your Position</h3>
+            <p class="text-muted" id="your-percentile">
+              Complete workouts to appear on the leaderboard
+            </p>
+          </div>
+        </div>
+        <div class="score-display">
+          <div class="score-value" id="your-score">--</div>
+          <div class="score-label" id="your-score-label">Best Score</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="leaderboard-tabs">
+        <button
+          class="tab-btn active"
+          data-type="best_score"
+          onclick="switchTab('best_score')"
+        >
+          🏆 Best Score
+        </button>
+        <button
+          class="tab-btn"
+          data-type="total_reps"
+          onclick="switchTab('total_reps')"
+        >
+          🔄 Total Reps
+        </button>
+        <button
+          class="tab-btn"
+          data-type="avg_score"
+          onclick="switchTab('avg_score')"
+        >
+          ⭐ Average Score
+        </button>
+      </div>
+
+      <!-- Leaderboard List -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-icon card-icon-warning">🏅</span>
+            <span id="leaderboard-title">Top Athletes - Best Score</span>
+          </h2>
+        </div>
+        <div class="card-body" id="leaderboard-container">
+          <div class="empty-leaderboard">
+            <div class="empty-leaderboard-icon">🏆</div>
+            <h3>No Rankings Yet</h3>
+            <p>Be the first to complete a workout and claim the top spot!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- How Rankings Work -->
+      <div class="card mt-xl">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-icon card-icon-accent">📋</span>
+            How Rankings Work
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="stats-grid">
+            <div class="p-md">
+              <h4 class="text-white mb-sm flex items-center gap-sm">
+                <span class="trophy-icons">🏆</span> Best Score
+              </h4>
+              <p class="text-muted">
+                Ranked by the highest single rep score achieved. Push for
+                perfect form!
+              </p>
+            </div>
+            <div class="p-md">
+              <h4 class="text-white mb-sm flex items-center gap-sm">
+                <span class="trophy-icons">🔄</span> Total Reps
+              </h4>
+              <p class="text-muted">
+                Ranked by total number of reps completed. Consistency is key!
+              </p>
+            </div>
+            <div class="p-md">
+              <h4 class="text-white mb-sm flex items-center gap-sm">
+                <span class="trophy-icons">⭐</span> Average Score
+              </h4>
+              <p class="text-muted">
+                Ranked by average score across all reps. Requires at least 3
+                sessions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>PosePro v2.0 — AI-Powered Form Analysis</p>
+    </footer>
+
+    <script>
+      let currentScoreType = "best_score";
+      let currentUserId = 1;
+
+      const scoreTitles = {
+        best_score: "Top Athletes - Best Score",
+        total_reps: "Top Athletes - Total Reps",
+        avg_score: "Top Athletes - Average Score",
+      };
+
+      const scoreLabels = {
+        best_score: "Best Score",
+        total_reps: "Total Reps",
+        avg_score: "Avg Score",
+      };
+
+      async function loadLeaderboard(scoreType = "best_score") {
+        try {
+          const response = await fetch(
+            `/api/leaderboard?type=${scoreType}&limit=20`
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            currentUserId = data.user_rank?.user_id || 1;
+            renderLeaderboard(data.leaderboard, data.user_rank, scoreType);
+            updateYourPosition(data.user_rank, scoreType);
+          }
+        } catch (error) {
+          console.error("Error loading leaderboard:", error);
+        }
+      }
+
+      function renderLeaderboard(leaderboard, userRank, scoreType) {
+        const container = document.getElementById("leaderboard-container");
+        document.getElementById("leaderboard-title").textContent =
+          scoreTitles[scoreType];
+
+        if (!leaderboard || leaderboard.length === 0) {
+          container.innerHTML = `
+            <div class="empty-leaderboard">
+              <div class="empty-leaderboard-icon">🏆</div>
+              <h3>No Rankings Yet</h3>
+              <p>Be the first to complete a workout and claim the top spot!</p>
+              <a href="/camera" class="btn btn-primary mt-lg">Start Workout</a>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = leaderboard
+          .map((entry, index) => {
+            const isCurrentUser = entry.user_id === currentUserId;
+            const rankClass =
+              index === 0
+                ? "rank-1"
+                : index === 1
+                ? "rank-2"
+                : index === 2
+                ? "rank-3"
+                : "rank-default";
+            const rowClass =
+              index === 0
+                ? "top-1"
+                : index === 1
+                ? "top-2"
+                : index === 2
+                ? "top-3"
+                : "";
+            const medal =
+              index === 0
+                ? "🥇"
+                : index === 1
+                ? "🥈"
+                : index === 2
+                ? "🥉"
+                : entry.rank;
+
+            let scoreDisplay = "";
+            if (scoreType === "best_score") {
+              scoreDisplay = entry.score ? entry.score.toFixed(0) : "--";
+            } else if (scoreType === "total_reps") {
+              scoreDisplay = entry.score || 0;
+            } else {
+              scoreDisplay = entry.score ? entry.score.toFixed(1) : "--";
+            }
+
+            return `
+            <div class="leaderboard-row ${rowClass} ${
+              isCurrentUser ? "current-user" : ""
+            }">
+              <div class="rank-display ${rankClass}">
+                ${index < 3 ? medal : entry.rank}
+              </div>
+              <div class="user-avatar-small" style="background: ${
+                entry.avatar_color || "#10b981"
+              }">
+                ${(entry.display_name || "A")[0].toUpperCase()}
+              </div>
+              <div class="user-info">
+                <div class="user-name">${entry.display_name || "Athlete"}${
+              isCurrentUser ? " (You)" : ""
+            }</div>
+                <div class="user-meta">${entry.total_sessions} sessions • ${
+              entry.total_reps
+            } reps</div>
+              </div>
+              <div class="score-display">
+                <div class="score-value">${scoreDisplay}</div>
+                <div class="score-label">${scoreLabels[scoreType]}</div>
+              </div>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      function updateYourPosition(userRank, scoreType) {
+        const rankEl = document.getElementById("your-rank");
+        const percentileEl = document.getElementById("your-percentile");
+        const scoreEl = document.getElementById("your-score");
+        const scoreLabelEl = document.getElementById("your-score-label");
+
+        scoreLabelEl.textContent = scoreLabels[scoreType];
+
+        if (userRank && userRank.rank) {
+          rankEl.textContent = `#${userRank.rank}`;
+          percentileEl.textContent = `Top ${(100 - userRank.percentile).toFixed(
+            0
+          )}% of all athletes`;
+
+          if (scoreType === "best_score") {
+            scoreEl.textContent = userRank.score
+              ? userRank.score.toFixed(0)
+              : "--";
+          } else if (scoreType === "total_reps") {
+            scoreEl.textContent = userRank.score || 0;
+          } else {
+            scoreEl.textContent = userRank.score
+              ? userRank.score.toFixed(1)
+              : "--";
+          }
+        } else {
+          rankEl.textContent = "#--";
+          percentileEl.textContent =
+            "Complete workouts to appear on the leaderboard";
+          scoreEl.textContent = "--";
+        }
+      }
+
+      function switchTab(scoreType) {
+        currentScoreType = scoreType;
+
+        // Update tab buttons
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.type === scoreType);
+        });
+
+        // Load new data
+        loadLeaderboard(scoreType);
+      }
+
+      // Initialize
+      loadLeaderboard("best_score");
+    </script>
+  </body>
+</html>

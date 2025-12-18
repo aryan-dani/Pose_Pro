@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workout History - PosePro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <style>
+      .session-card {
+        cursor: pointer;
+        transition: all var(--transition-base);
+      }
+
+      .session-card:hover {
+        transform: translateX(4px);
+      }
+
+      .session-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-md);
+      }
+
+      .session-date {
+        font-size: 0.875rem;
+        color: var(--gray-400);
+      }
+
+      .session-stats {
+        display: flex;
+        gap: var(--space-xl);
+      }
+
+      .session-stat {
+        text-align: center;
+      }
+
+      .session-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-100);
+      }
+
+      .session-stat-label {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+      }
+
+      .rep-row {
+        display: flex;
+        align-items: center;
+        padding: var(--space-md);
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--space-sm);
+      }
+
+      .rep-number {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--gray-300);
+        margin-right: var(--space-md);
+      }
+
+      .rep-details {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: var(--space-md);
+      }
+
+      .rep-metric {
+        text-align: center;
+      }
+
+      .rep-metric-value {
+        font-weight: 600;
+        color: var(--gray-200);
+      }
+
+      .rep-metric-label {
+        font-size: 0.7rem;
+        color: var(--gray-500);
+      }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: var(--space-xl);
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--gradient-card);
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        max-width: 800px;
+        width: 100%;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        padding: var(--space-xl);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-body {
+        padding: var(--space-xl);
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        color: var(--gray-400);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: var(--space-sm);
+      }
+
+      .close-btn:hover {
+        color: var(--gray-200);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: var(--space-3xl);
+      }
+
+      .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: var(--space-lg);
+      }
+
+      .empty-state-title {
+        font-size: 1.5rem;
+        color: var(--gray-200);
+        margin-bottom: var(--space-md);
+      }
+
+      .empty-state-text {
+        color: var(--gray-400);
+        margin-bottom: var(--space-xl);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">
+          <div class="navbar-logo">💪</div>
+          <span class="navbar-title">Pose<span>Pro</span></span>
+        </a>
+        <ul class="navbar-nav">
+          <li>
+            <a href="/" class="nav-link"
+              ><span class="nav-link-icon">🏠</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="/camera" class="nav-link"
+              ><span class="nav-link-icon">📷</span> Live Analysis</a
+            >
+          </li>
+          <li>
+            <a href="/dashboard" class="nav-link"
+              ><span class="nav-link-icon">📊</span> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/history" class="nav-link active"
+              ><span class="nav-link-icon">📈</span> History</a
+            >
+          </li>
+          <li>
+            <a href="/leaderboard" class="nav-link"
+              ><span class="nav-link-icon">🏆</span> Leaderboard</a
+            >
+          </li>
+          <li>
+            <a href="/profile" class="nav-link"
+              ><span class="nav-link-icon">👤</span> Profile</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Page Header -->
+      <div class="flex justify-between items-center mb-xl">
+        <div>
+          <h1 class="text-gradient mb-sm">Workout History</h1>
+          <p class="text-muted">
+            Review your past sessions and track your improvement journey.
+          </p>
+        </div>
+        <a href="/camera" class="btn btn-primary">
+          <span>🚀</span> New Workout
+        </a>
+      </div>
+
+      <!-- Summary Stats -->
+      <div class="stats-grid mb-xl">
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">This Week</span>
+            <div class="card-icon card-icon-primary">📅</div>
+          </div>
+          <div class="stat-value" id="week-reps">0</div>
+          <p class="text-muted">reps completed</p>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">This Month</span>
+            <div class="card-icon card-icon-accent">📆</div>
+          </div>
+          <div class="stat-value" id="month-sessions">0</div>
+          <p class="text-muted">workout sessions</p>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Avg This Week</span>
+            <div class="card-icon card-icon-warning">⭐</div>
+          </div>
+          <div class="stat-value" id="week-avg">--</div>
+          <p class="text-muted">average score</p>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Trend</span>
+            <div class="card-icon card-icon-error">📈</div>
+          </div>
+          <div class="stat-value" id="trend-indicator">--</div>
+          <p class="text-muted" id="trend-text">vs last week</p>
+        </div>
+      </div>
+
+      <!-- Sessions List -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-icon card-icon-primary">🕐</span>
+            All Sessions
+          </h2>
+        </div>
+        <div class="card-body" id="sessions-container">
+          <!-- Sessions will be loaded here -->
+          <div class="empty-state" id="empty-state">
+            <div class="empty-state-icon">🏋️</div>
+            <h3 class="empty-state-title">No Workouts Yet</h3>
+            <p class="empty-state-text">
+              Start your first workout to begin tracking your progress!
+            </p>
+            <a href="/camera" class="btn btn-primary">Start First Workout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session Detail Modal -->
+    <div class="modal-overlay" id="session-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-title">Session Details</h2>
+          <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+          <!-- Session details will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>PosePro v2.0 — AI-Powered Form Analysis</p>
+    </footer>
+
+    <script>
+      let sessionsData = [];
+
+      async function loadHistory() {
+        try {
+          const response = await fetch("/api/history");
+          if (!response.ok) throw new Error("Failed to fetch history");
+
+          const data = await response.json();
+
+          if (data.success) {
+            sessionsData = data.sessions || [];
+            updateSummaryStats(data);
+            renderSessions(sessionsData);
+          }
+        } catch (error) {
+          console.error("Error loading history:", error);
+        }
+      }
+
+      function updateSummaryStats(data) {
+        // Week stats
+        document.getElementById("week-reps").textContent =
+          data.week_stats?.total_reps || 0;
+        document.getElementById("month-sessions").textContent =
+          data.month_stats?.total_sessions || 0;
+
+        if (data.week_stats?.avg_score) {
+          document.getElementById("week-avg").textContent =
+            data.week_stats.avg_score.toFixed(0);
+        }
+
+        // Trend
+        const trend = data.score_trend || 0;
+        const trendEl = document.getElementById("trend-indicator");
+        const trendTextEl = document.getElementById("trend-text");
+
+        if (trend > 0) {
+          trendEl.textContent = `+${trend.toFixed(1)}`;
+          trendEl.style.color = "var(--success)";
+          trendTextEl.textContent = "improvement";
+        } else if (trend < 0) {
+          trendEl.textContent = trend.toFixed(1);
+          trendEl.style.color = "var(--error)";
+          trendTextEl.textContent = "vs last week";
+        } else {
+          trendEl.textContent = "0";
+          trendTextEl.textContent = "no change";
+        }
+      }
+
+      function renderSessions(sessions) {
+        const container = document.getElementById("sessions-container");
+        const emptyState = document.getElementById("empty-state");
+
+        if (!sessions || sessions.length === 0) {
+          emptyState.style.display = "block";
+          return;
+        }
+
+        emptyState.style.display = "none";
+
+        const sessionsHTML = sessions
+          .map((session) => {
+            const date = new Date(session.start_time);
+            const dateStr = date.toLocaleDateString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+            const timeStr = date.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+
+            const grade =
+              session.best_grade || getGradeFromScore(session.avg_score);
+            const gradeClass = getGradeClass(grade);
+
+            return `
+                    <div class="session-card card mb-md" onclick="showSessionDetails(${
+                      session.id
+                    })" style="padding: var(--space-lg);">
+                        <div class="session-header">
+                            <div>
+                                <h4 class="text-white">${dateStr}</h4>
+                                <span class="session-date">${timeStr}</span>
+                            </div>
+                            <span class="grade-badge ${gradeClass}">${grade}</span>
+                        </div>
+                        <div class="session-stats">
+                            <div class="session-stat">
+                                <div class="session-stat-value">${
+                                  session.total_reps || 0
+                                }</div>
+                                <div class="session-stat-label">Reps</div>
+                            </div>
+                            <div class="session-stat">
+                                <div class="session-stat-value">${
+                                  session.avg_score
+                                    ? session.avg_score.toFixed(0)
+                                    : "--"
+                                }</div>
+                                <div class="session-stat-label">Avg Score</div>
+                            </div>
+                            <div class="session-stat">
+                                <div class="session-stat-value">${
+                                  session.best_score
+                                    ? session.best_score.toFixed(0)
+                                    : "--"
+                                }</div>
+                                <div class="session-stat-label">Best</div>
+                            </div>
+                            <div class="session-stat">
+                                <div class="session-stat-value">${formatDuration(
+                                  session.total_duration_seconds
+                                )}</div>
+                                <div class="session-stat-label">Duration</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
+
+        container.innerHTML = sessionsHTML + emptyState.outerHTML;
+      }
+
+      async function showSessionDetails(sessionId) {
+        try {
+          const response = await fetch(`/api/session/${sessionId}/reps`);
+          if (!response.ok) throw new Error("Failed to fetch session details");
+
+          const data = await response.json();
+
+          if (data.success) {
+            renderSessionModal(sessionId, data.reps);
+          }
+        } catch (error) {
+          console.error("Error loading session details:", error);
+        }
+      }
+
+      function renderSessionModal(sessionId, reps) {
+        const session = sessionsData.find((s) => s.id === sessionId);
+        const modal = document.getElementById("session-modal");
+        const modalTitle = document.getElementById("modal-title");
+        const modalBody = document.getElementById("modal-body");
+
+        if (session) {
+          const date = new Date(session.start_time);
+          modalTitle.textContent = `Session - ${date.toLocaleDateString(
+            "en-US",
+            {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+            }
+          )}`;
+        }
+
+        if (!reps || reps.length === 0) {
+          modalBody.innerHTML =
+            '<p class="text-muted">No rep data available for this session.</p>';
+        } else {
+          const repsHTML = reps
+            .map((rep) => {
+              const grade = rep.grade || "--";
+              const gradeClass = getGradeClass(grade);
+
+              return `
+                        <div class="rep-row">
+                            <div class="rep-number">${rep.rep_number}</div>
+                            <div class="rep-details">
+                                <div class="rep-metric">
+                                    <div class="rep-metric-value">${
+                                      rep.score ? rep.score.toFixed(0) : "--"
+                                    }</div>
+                                    <div class="rep-metric-label">Score</div>
+                                </div>
+                                <div class="rep-metric">
+                                    <span class="grade-badge ${gradeClass}" style="font-size: 0.8rem;">${grade}</span>
+                                    <div class="rep-metric-label">Grade</div>
+                                </div>
+                                <div class="rep-metric">
+                                    <div class="rep-metric-value">${
+                                      rep.rom_total
+                                        ? rep.rom_total.toFixed(0) + "°"
+                                        : "--"
+                                    }</div>
+                                    <div class="rep-metric-label">ROM</div>
+                                </div>
+                                <div class="rep-metric">
+                                    <div class="rep-metric-value">${
+                                      rep.symmetry_diff
+                                        ? rep.symmetry_diff.toFixed(1) + "°"
+                                        : "--"
+                                    }</div>
+                                    <div class="rep-metric-label">Symmetry</div>
+                                </div>
+                                <div class="rep-metric">
+                                    <div class="rep-metric-value">${
+                                      rep.duration_seconds
+                                        ? rep.duration_seconds.toFixed(1) + "s"
+                                        : "--"
+                                    }</div>
+                                    <div class="rep-metric-label">Duration</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            })
+            .join("");
+
+          modalBody.innerHTML = `
+                    <div class="mb-lg">
+                        <h4 class="text-white mb-md">Rep-by-Rep Analysis</h4>
+                        ${repsHTML}
+                    </div>
+                `;
+        }
+
+        modal.classList.add("active");
+      }
+
+      function closeModal() {
+        document.getElementById("session-modal").classList.remove("active");
+      }
+
+      // Close modal on overlay click
+      document
+        .getElementById("session-modal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeModal();
+        });
+
+      // Close modal on Escape key
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeModal();
+      });
+
+      function formatDuration(seconds) {
+        if (!seconds) return "--";
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+      }
+
+      function getGradeFromScore(score) {
+        if (!score) return "--";
+        if (score >= 90) return "A+";
+        if (score >= 85) return "A";
+        if (score >= 80) return "A-";
+        if (score >= 75) return "B+";
+        if (score >= 70) return "B";
+        if (score >= 65) return "B-";
+        if (score >= 60) return "C+";
+        if (score >= 55) return "C";
+        return "F";
+      }
+
+      function getGradeClass(grade) {
+        if (!grade || grade === "--") return "grade-f";
+        if (grade.includes("A")) return "grade-a";
+        if (grade.includes("B")) return "grade-b";
+        if (grade.includes("C")) return "grade-c";
+        return "grade-f";
+      }
+
+      // Load history on page load
+      loadHistory();
+    </script>
+  </body>
+</html>

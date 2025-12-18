@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PosePro - AI-Powered Form Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">
+          <div class="navbar-logo">💪</div>
+          <span class="navbar-title">Pose<span>Pro</span></span>
+        </a>
+        <ul class="navbar-nav">
+          <li>
+            <a href="/" class="nav-link active"
+              ><span class="nav-link-icon">🏠</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="/camera" class="nav-link"
+              ><span class="nav-link-icon">📷</span> Live Analysis</a
+            >
+          </li>
+          <li>
+            <a href="/dashboard" class="nav-link"
+              ><span class="nav-link-icon">📊</span> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/leaderboard" class="nav-link"
+              ><span class="nav-link-icon">🏆</span> Leaderboard</a
+            >
+          </li>
+          <li>
+            <a href="/profile" class="nav-link"
+              ><span class="nav-link-icon">👤</span> Profile</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Hero Section -->
+      <section class="hero">
+        <h1 class="hero-title">
+          <span class="text-gradient">Perfect Your Form</span>
+        </h1>
+        <p class="hero-subtitle">
+          AI-powered real-time analysis for shoulder raises. Get instant
+          feedback, track your progress, and achieve perfect form every time.
+        </p>
+        <a href="/camera" class="btn btn-primary btn-lg">
+          <span>🚀</span> Start Training
+        </a>
+      </section>
+
+      <!-- Quick Stats -->
+      <section class="stats-grid mb-xl">
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Today's Reps</span>
+            <div class="card-icon card-icon-primary">🔥</div>
+          </div>
+          <div class="stat-value" id="today-reps">0</div>
+          <div class="stat-change stat-change-positive" id="reps-change">
+            <span>↑</span> <span id="reps-change-text">Start tracking</span>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Average Score</span>
+            <div class="card-icon card-icon-accent">⭐</div>
+          </div>
+          <div class="stat-value" id="avg-score">--</div>
+          <div class="progress mt-sm">
+            <div
+              class="progress-bar"
+              id="score-progress"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Best Grade</span>
+            <div class="card-icon card-icon-warning">🏆</div>
+          </div>
+          <div class="stat-value">
+            <span class="grade-badge grade-a" id="best-grade">--</span>
+          </div>
+          <p class="text-muted mt-sm" id="grade-subtext">
+            Complete a rep to see your grade
+          </p>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Tracking Status</span>
+            <div class="card-icon card-icon-primary">📡</div>
+          </div>
+          <div class="stat-value stat-value-sm" id="tracking-status">Ready</div>
+          <div class="video-status" id="camera-status">
+            <span>Camera Active</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Feature Cards -->
+      <section class="mb-xl">
+        <h2 class="text-white mb-lg">Get Started</h2>
+        <div class="stats-grid">
+          <a href="/camera" class="card feature-card">
+            <div class="feature-icon card-icon-primary">📷</div>
+            <h3 class="feature-title">Live Camera Analysis</h3>
+            <p class="feature-description">
+              Use your webcam for real-time form analysis. Get instant feedback
+              on your shoulder raises with AI-powered pose detection.
+            </p>
+            <span class="btn btn-primary">Start Live Analysis →</span>
+          </a>
+
+          <a href="/dashboard" class="card feature-card">
+            <div class="feature-icon card-icon-accent">📊</div>
+            <h3 class="feature-title">Performance Dashboard</h3>
+            <p class="feature-description">
+              Track your progress over time with detailed analytics, charts, and
+              insights. Monitor your improvement journey.
+            </p>
+            <span class="btn btn-secondary">View Dashboard →</span>
+          </a>
+
+          <a href="/chat" class="card feature-card">
+            <div class="feature-icon card-icon-warning">💬</div>
+            <h3 class="feature-title">AI Form Assistant</h3>
+            <p class="feature-description">
+              Get personalized advice on technique, form corrections, and
+              answers to your shoulder raise questions.
+            </p>
+            <span class="btn btn-secondary">Chat Now →</span>
+          </a>
+
+          <a href="/upload" class="card feature-card">
+            <div class="feature-icon card-icon-error">📤</div>
+            <h3 class="feature-title">Video Upload</h3>
+            <p class="feature-description">
+              Upload pre-recorded videos for detailed analysis. Perfect for
+              reviewing your form at your own pace.
+            </p>
+            <span class="btn btn-secondary">Upload Video →</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- How It Works -->
+      <section class="card mb-xl">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-icon card-icon-primary">📋</span>
+            How It Works
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="stats-grid">
+            <div
+              class="flex flex-col items-center gap-md p-lg"
+              style="text-align: center"
+            >
+              <div
+                class="card-icon card-icon-primary"
+                style="width: 56px; height: 56px; font-size: 1.5rem"
+              >
+                1
+              </div>
+              <h4 class="text-white">Position Yourself</h4>
+              <p class="text-muted">
+                Stand 2-3 meters from camera with good lighting and ensure your
+                full body is visible.
+              </p>
+            </div>
+            <div
+              class="flex flex-col items-center gap-md p-lg"
+              style="text-align: center"
+            >
+              <div
+                class="card-icon card-icon-accent"
+                style="width: 56px; height: 56px; font-size: 1.5rem"
+              >
+                2
+              </div>
+              <h4 class="text-white">Start Tracking</h4>
+              <p class="text-muted">
+                Click "Start Tracking" and perform your lateral raises. The AI
+                analyzes every movement.
+              </p>
+            </div>
+            <div
+              class="flex flex-col items-center gap-md p-lg"
+              style="text-align: center"
+            >
+              <div
+                class="card-icon card-icon-warning"
+                style="width: 56px; height: 56px; font-size: 1.5rem"
+              >
+                3
+              </div>
+              <h4 class="text-white">Get Feedback</h4>
+              <p class="text-muted">
+                Receive instant scores, grades, and detailed metrics for each
+                rep you complete.
+              </p>
+            </div>
+            <div
+              class="flex flex-col items-center gap-md p-lg"
+              style="text-align: center"
+            >
+              <div
+                class="card-icon card-icon-error"
+                style="width: 56px; height: 56px; font-size: 1.5rem"
+              >
+                4
+              </div>
+              <h4 class="text-white">Improve</h4>
+              <p class="text-muted">
+                Track your progress over time and use insights to perfect your
+                shoulder raise form.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Metrics Explained -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-icon card-icon-accent">📐</span>
+            Metrics We Track
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="stats-grid">
+            <div class="p-md">
+              <h4 class="text-white mb-sm flex items-center gap-sm">
+                <span style="color: var(--primary-400)">📐</span> Range of
+                Motion
+              </h4>
+              <p class="text-muted">
+                Measures how high you raise your arms. Ideal range is 70-90° for
+                shoulder height.
+              </p>
+            </div>
+            <div class="p-md">
+              <h4 class="text-white mb-sm flex items-center gap-sm">
+                <span style="color: var(--accent-400)">⚖️</span> Bilateral
+                Symmetry
+              </h4>
+              <p class="text-muted">
+                Compares left and right arm angles. Lower difference means
+                better symmetry.
+              </p>
+            </div>
+            <div class="p-md">
+              <h4 class="text-white mb-sm flex items-center gap-sm">
+                <span style="color: var(--warning)">🎯</span> Torso Stability
+              </h4>
+              <p class="text-muted">
+                Detects body lean or sway. Keep torso still for proper form.
+              </p>
+            </div>
+            <div class="p-md">
+              <h4 class="text-white mb-sm flex items-center gap-sm">
+                <span style="color: var(--error)">💪</span> Elbow Position
+              </h4>
+              <p class="text-muted">
+                Monitors elbow angle throughout movement. Slight bend (160-180°)
+                is ideal.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>PosePro v2.0 — AI-Powered Form Analysis</p>
+      <p class="text-muted mt-sm">Built with MediaPipe, OpenCV, and Flask</p>
+    </footer>
+
+    <script>
+      // Update stats from API
+      async function updateStats() {
+        try {
+          const response = await fetch("/api/status");
+          const data = await response.json();
+
+          // Update reps
+          document.getElementById("today-reps").textContent =
+            data.rep_count || 0;
+
+          // Update tracking status
+          const statusEl = document.getElementById("tracking-status");
+          statusEl.textContent = data.tracking_active ? "Active" : "Ready";
+          statusEl.style.color = data.tracking_active
+            ? "var(--success)"
+            : "var(--gray-400)";
+
+          // Update score
+          if (data.latest_score) {
+            document.getElementById("avg-score").textContent =
+              data.latest_score.toFixed(0);
+            document.getElementById(
+              "score-progress"
+            ).style.width = `${data.latest_score}%`;
+          }
+
+          // Update grade
+          if (data.latest_grade) {
+            const gradeEl = document.getElementById("best-grade");
+            gradeEl.textContent = data.latest_grade;
+            gradeEl.className =
+              "grade-badge grade-" +
+              data.latest_grade
+                .toLowerCase()
+                .replace("+", "-plus")
+                .replace("-", "-minus");
+            document.getElementById(
+              "grade-subtext"
+            ).textContent = `Latest rep grade`;
+          }
+
+          // Update reps change text
+          if (data.rep_count > 0) {
+            document.getElementById(
+              "reps-change-text"
+            ).textContent = `${data.rep_count} completed`;
+          }
+        } catch (error) {
+          console.error("Error fetching stats:", error);
+        }
+      }
+
+      // Fetch dashboard stats
+      async function fetchDashboardStats() {
+        try {
+          const response = await fetch("/api/dashboard/stats");
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.stats) {
+              const stats = data.stats;
+              if (stats.total_reps) {
+                document.getElementById("today-reps").textContent =
+                  stats.total_reps;
+              }
+              if (stats.lifetime_avg_score) {
+                document.getElementById("avg-score").textContent =
+                  stats.lifetime_avg_score.toFixed(0);
+                document.getElementById(
+                  "score-progress"
+                ).style.width = `${stats.lifetime_avg_score}%`;
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching dashboard stats:", error);
+        }
+      }
+
+      // Initialize
+      updateStats();
+      fetchDashboardStats();
+      setInterval(updateStats, 3000);
+    </script>
+  </body>
+</html>

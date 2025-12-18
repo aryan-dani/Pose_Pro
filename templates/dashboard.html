@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - PosePro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+      }
+
+      .user-welcome {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+      }
+
+      .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+      }
+
+      .user-info h2 {
+        color: var(--gray-100);
+        font-size: 1.5rem;
+      }
+
+      .user-info p {
+        color: var(--gray-400);
+        font-size: 0.9rem;
+      }
+
+      .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+      }
+
+      .chart-container-small {
+        height: 200px;
+      }
+
+      .metric-ring {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .ring-chart {
+        position: relative;
+        width: 150px;
+        height: 150px;
+      }
+
+      .ring-chart canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      .ring-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .ring-value-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--gray-100);
+      }
+
+      .ring-value-label {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+      }
+
+      .streak-card {
+        background: linear-gradient(
+          135deg,
+          rgba(245, 158, 11, 0.15) 0%,
+          rgba(239, 68, 68, 0.15) 100%
+        );
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+
+      .streak-icon {
+        font-size: 3rem;
+        margin-bottom: var(--space-md);
+      }
+
+      .quick-actions {
+        display: flex;
+        gap: var(--space-md);
+        flex-wrap: wrap;
+      }
+
+      .quick-action-card {
+        flex: 1;
+        min-width: 200px;
+        padding: var(--space-lg);
+        background: var(--gradient-card);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        text-decoration: none;
+        transition: all var(--transition-base);
+      }
+
+      .quick-action-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary-400);
+        box-shadow: var(--shadow-glow);
+      }
+
+      .quick-action-icon {
+        font-size: 2rem;
+        margin-bottom: var(--space-sm);
+      }
+
+      .quick-action-title {
+        font-weight: 600;
+        color: var(--gray-100);
+      }
+
+      .progress-card {
+        padding: var(--space-lg);
+      }
+
+      .progress-item {
+        margin-bottom: var(--space-lg);
+      }
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--space-sm);
+      }
+
+      .progress-label {
+        color: var(--gray-300);
+        font-weight: 500;
+      }
+
+      .progress-value {
+        color: var(--primary-400);
+        font-weight: 600;
+      }
+
+      .chart-legend {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-lg);
+        margin-top: var(--space-md);
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        font-size: 0.85rem;
+        color: var(--gray-400);
+      }
+
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .insight-card {
+        background: linear-gradient(
+          135deg,
+          rgba(59, 130, 246, 0.1) 0%,
+          rgba(139, 92, 246, 0.1) 100%
+        );
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        padding: var(--space-lg);
+      }
+
+      .insight-icon {
+        font-size: 1.5rem;
+        margin-bottom: var(--space-sm);
+      }
+
+      .insight-title {
+        font-weight: 600;
+        color: var(--gray-100);
+        margin-bottom: var(--space-xs);
+      }
+
+      .insight-text {
+        color: var(--gray-400);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">
+          <div class="navbar-logo">💪</div>
+          <span class="navbar-title">Pose<span>Pro</span></span>
+        </a>
+        <ul class="navbar-nav">
+          <li>
+            <a href="/" class="nav-link"
+              ><span class="nav-link-icon">🏠</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="/camera" class="nav-link"
+              ><span class="nav-link-icon">📷</span> Live Analysis</a
+            >
+          </li>
+          <li>
+            <a href="/dashboard" class="nav-link active"
+              ><span class="nav-link-icon">📊</span> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/leaderboard" class="nav-link"
+              ><span class="nav-link-icon">🏆</span> Leaderboard</a
+            >
+          </li>
+          <li>
+            <a href="/profile" class="nav-link"
+              ><span class="nav-link-icon">👤</span> Profile</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <div class="user-welcome">
+          <div class="user-avatar" id="user-avatar" style="background: #10b981">
+            A
+          </div>
+          <div class="user-info">
+            <h2>Welcome back, <span id="user-name">Athlete</span>!</h2>
+            <p id="welcome-message">
+              Ready to train? Let's improve your form today.
+            </p>
+          </div>
+        </div>
+        <a href="/camera" class="btn btn-primary btn-lg">
+          <span>🚀</span> Start Workout
+        </a>
+      </div>
+
+      <!-- Quick Stats Row -->
+      <div class="stats-grid mb-xl">
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Total Workouts</span>
+            <div class="card-icon card-icon-primary">🏋️</div>
+          </div>
+          <div class="stat-value" id="total-sessions">0</div>
+          <p class="text-muted">lifetime sessions</p>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Total Reps</span>
+            <div class="card-icon card-icon-accent">🔄</div>
+          </div>
+          <div class="stat-value" id="total-reps">0</div>
+          <p class="text-muted">completed reps</p>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Average Score</span>
+            <div class="card-icon card-icon-warning">⭐</div>
+          </div>
+          <div class="stat-value" id="avg-score">--</div>
+          <div class="progress mt-sm">
+            <div class="progress-bar" id="avg-progress" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Best Score</span>
+            <div class="card-icon card-icon-error">🏆</div>
+          </div>
+          <div class="stat-value" id="best-score">--</div>
+          <p class="text-muted">all-time record</p>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="stats-grid mb-xl" style="grid-template-columns: 2fr 1fr">
+        <!-- Score Trend Chart -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <span class="card-icon card-icon-primary">📈</span>
+              Performance Trend
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="performanceChart"></canvas>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background: #10b981"></div>
+                <span>Avg Score</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background: #3b82f6"></div>
+                <span>Best Score</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade Distribution -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <span class="card-icon card-icon-accent">📊</span>
+              Grade Distribution
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container chart-container-small">
+              <canvas id="gradeChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Activity & Progress -->
+      <div class="stats-grid mb-xl" style="grid-template-columns: 1fr 1fr">
+        <!-- Weekly Activity -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <span class="card-icon card-icon-warning">📅</span>
+              Weekly Activity
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container chart-container-small">
+              <canvas id="weeklyChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROM Progress -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <span class="card-icon card-icon-primary">📐</span>
+              ROM Progress
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container chart-container-small">
+              <canvas id="romChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Records & Recent Sessions -->
+      <div class="stats-grid mb-xl">
+        <!-- Personal Records -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <span class="card-icon card-icon-warning">🏅</span>
+              Personal Records
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="table-container">
+              <table class="table" id="records-table">
+                <thead>
+                  <tr>
+                    <th>Record</th>
+                    <th>Value</th>
+                    <th>Achieved</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>🏆 Best Score</td>
+                    <td id="pr-best-score">--</td>
+                    <td id="pr-best-score-date">--</td>
+                  </tr>
+                  <tr>
+                    <td>📐 Best ROM</td>
+                    <td id="pr-best-rom">--</td>
+                    <td id="pr-best-rom-date">--</td>
+                  </tr>
+                  <tr>
+                    <td>🔥 Most Reps</td>
+                    <td id="pr-most-reps">--</td>
+                    <td id="pr-most-reps-date">--</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Sessions -->
+        <div class="card">
+          <div class="card-header flex justify-between items-center">
+            <h3 class="card-title">
+              <span class="card-icon card-icon-error">🕐</span>
+              Recent Sessions
+            </h3>
+            <a href="/history" class="btn btn-ghost btn-sm">View All →</a>
+          </div>
+          <div class="card-body">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Reps</th>
+                    <th>Avg Score</th>
+                    <th>Grade</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-sessions-body">
+                  <tr>
+                    <td
+                      colspan="4"
+                      class="text-muted"
+                      style="text-align: center; padding: 30px"
+                    >
+                      No sessions recorded yet. Start a workout to see your
+                      history!
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insights Row -->
+      <div
+        class="stats-grid mb-xl"
+        style="grid-template-columns: repeat(3, 1fr)"
+      >
+        <div class="card insight-card">
+          <div class="insight-icon">💡</div>
+          <div class="insight-title">Form Tip</div>
+          <div class="insight-text" id="insight-form">
+            Start a workout to get personalized form insights based on your
+            performance.
+          </div>
+        </div>
+        <div class="card insight-card">
+          <div class="insight-icon">📈</div>
+          <div class="insight-title">Progress</div>
+          <div class="insight-text" id="insight-progress">
+            Complete more sessions to track your improvement over time.
+          </div>
+        </div>
+        <div class="card insight-card">
+          <div class="insight-icon">🎯</div>
+          <div class="insight-title">Goal</div>
+          <div class="insight-text" id="insight-goal">
+            Set your fitness goals in your profile to get targeted
+            recommendations.
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <a href="/camera" class="quick-action-card">
+          <div class="quick-action-icon">🚀</div>
+          <div class="quick-action-title">Start Workout</div>
+        </a>
+        <a href="/history" class="quick-action-card">
+          <div class="quick-action-icon">📜</div>
+          <div class="quick-action-title">View History</div>
+        </a>
+        <a href="/leaderboard" class="quick-action-card">
+          <div class="quick-action-icon">🏆</div>
+          <div class="quick-action-title">Leaderboard</div>
+        </a>
+        <a href="/profile" class="quick-action-card">
+          <div class="quick-action-icon">👤</div>
+          <div class="quick-action-title">Profile</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>PosePro v2.0 — AI-Powered Form Analysis</p>
+    </footer>
+
+    <script>
+      // Chart.js default config
+      Chart.defaults.color = "#94a3b8";
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.05)";
+
+      let performanceChart, gradeChart, weeklyChart, romChart;
+
+      async function loadDashboardData() {
+        try {
+          // Load profile data
+          const profileRes = await fetch("/api/profile");
+          const profileData = await profileRes.json();
+
+          if (profileData.success && profileData.profile) {
+            const profile = profileData.profile;
+            document.getElementById("user-avatar").textContent =
+              (profile.display_name || "A")[0].toUpperCase();
+            document.getElementById("user-avatar").style.background =
+              profile.avatar_color || "#10b981";
+            document.getElementById("user-name").textContent =
+              profile.display_name || "Athlete";
+          }
+
+          // Load dashboard stats
+          const response = await fetch("/api/dashboard/stats");
+          if (!response.ok) throw new Error("Failed to fetch stats");
+
+          const data = await response.json();
+
+          if (data.success) {
+            updateStats(data.stats);
+            updateCharts(data);
+            updateRecords(data.records);
+            updateRecentSessions(data.recent_sessions);
+            updateInsights(data);
+          }
+        } catch (error) {
+          console.error("Error loading dashboard:", error);
+        }
+      }
+
+      function updateStats(stats) {
+        if (!stats) return;
+
+        document.getElementById("total-sessions").textContent =
+          stats.total_sessions || 0;
+        document.getElementById("total-reps").textContent =
+          stats.total_reps || 0;
+
+        const avgScore = stats.lifetime_avg_score || stats.avg_score || 0;
+        if (avgScore) {
+          document.getElementById("avg-score").textContent =
+            avgScore.toFixed(0);
+          document.getElementById("avg-progress").style.width = `${avgScore}%`;
+        }
+
+        const bestScore = stats.all_time_best_score || stats.best_score || 0;
+        if (bestScore) {
+          document.getElementById("best-score").textContent =
+            bestScore.toFixed(0);
+        }
+      }
+
+      function updateRecords(records) {
+        if (!records) return;
+
+        const bestScore = records.best_score;
+        const bestRom = records.best_rom;
+
+        if (bestScore && bestScore.value) {
+          document.getElementById("pr-best-score").textContent =
+            bestScore.value.toFixed(1);
+          document.getElementById("pr-best-score-date").textContent =
+            formatDate(bestScore.achieved_at);
+        }
+
+        if (bestRom && bestRom.value) {
+          document.getElementById("pr-best-rom").textContent =
+            bestRom.value.toFixed(1) + "°";
+          document.getElementById("pr-best-rom-date").textContent = formatDate(
+            bestRom.achieved_at
+          );
+        }
+      }
+
+      function updateRecentSessions(sessions) {
+        const tbody = document.getElementById("recent-sessions-body");
+
+        if (!sessions || sessions.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="4" class="text-muted" style="text-align: center; padding: 30px;">
+                No sessions recorded yet. Start a workout to see your history!
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = sessions
+          .slice(0, 5)
+          .map((session) => {
+            const grade = getGradeFromScore(session.avg_score);
+            const gradeClass = getGradeClass(grade);
+            return `
+            <tr>
+              <td>${formatDate(session.start_time)}</td>
+              <td>${session.total_reps}</td>
+              <td>${
+                session.avg_score ? session.avg_score.toFixed(0) : "--"
+              }</td>
+              <td><span class="grade-badge ${gradeClass}">${grade}</span></td>
+            </tr>
+          `;
+          })
+          .join("");
+      }
+
+      function updateCharts(data) {
+        // Performance Trend Chart
+        const perfCtx = document
+          .getElementById("performanceChart")
+          .getContext("2d");
+
+        if (performanceChart) performanceChart.destroy();
+
+        const dailyStats = data.daily_stats || data.weekly_progress || [];
+        const labels = dailyStats.map((d) => formatShortDate(d.date)).reverse();
+        const avgScores = dailyStats.map((d) => d.avg_score || 0).reverse();
+        const bestScores = dailyStats.map((d) => d.best_score || 0).reverse();
+
+        performanceChart = new Chart(perfCtx, {
+          type: "line",
+          data: {
+            labels: labels.length ? labels : ["No Data"],
+            datasets: [
+              {
+                label: "Avg Score",
+                data: avgScores.length ? avgScores : [0],
+                borderColor: "#10b981",
+                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: "#10b981",
+                pointBorderColor: "#fff",
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+              },
+              {
+                label: "Best Score",
+                data: bestScores.length ? bestScores : [0],
+                borderColor: "#3b82f6",
+                backgroundColor: "transparent",
+                borderWidth: 2,
+                borderDash: [5, 5],
+                tension: 0.4,
+                pointRadius: 3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                grid: { color: "rgba(255, 255, 255, 0.05)" },
+              },
+              x: {
+                grid: { display: false },
+              },
+            },
+            interaction: {
+              intersect: false,
+              mode: "index",
+            },
+          },
+        });
+
+        // Grade Distribution Chart
+        const gradeCtx = document.getElementById("gradeChart").getContext("2d");
+
+        if (gradeChart) gradeChart.destroy();
+
+        const gradeDist =
+          data.grade_distribution || data.stats?.grade_distribution || {};
+        const aGrades =
+          (gradeDist["A+"] || 0) +
+          (gradeDist["A"] || 0) +
+          (gradeDist["A-"] || 0);
+        const bGrades =
+          (gradeDist["B+"] || 0) +
+          (gradeDist["B"] || 0) +
+          (gradeDist["B-"] || 0);
+        const cGrades = (gradeDist["C+"] || 0) + (gradeDist["C"] || 0);
+        const fGrades = gradeDist["F"] || 0;
+
+        gradeChart = new Chart(gradeCtx, {
+          type: "doughnut",
+          data: {
+            labels: ["A Grades", "B Grades", "C Grades", "F"],
+            datasets: [
+              {
+                data: [aGrades, bGrades, cGrades, fGrades],
+                backgroundColor: [
+                  "rgba(34, 197, 94, 0.8)",
+                  "rgba(59, 130, 246, 0.8)",
+                  "rgba(245, 158, 11, 0.8)",
+                  "rgba(239, 68, 68, 0.8)",
+                ],
+                borderWidth: 0,
+                hoverOffset: 10,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { padding: 15, usePointStyle: true },
+              },
+            },
+            cutout: "65%",
+          },
+        });
+
+        // Weekly Activity Chart
+        const weeklyCtx = document
+          .getElementById("weeklyChart")
+          .getContext("2d");
+
+        if (weeklyChart) weeklyChart.destroy();
+
+        const weekLabels = dailyStats
+          .slice(0, 7)
+          .map((d) => formatShortDate(d.date))
+          .reverse();
+        const weekReps = dailyStats
+          .slice(0, 7)
+          .map((d) => d.total_reps || 0)
+          .reverse();
+
+        weeklyChart = new Chart(weeklyCtx, {
+          type: "bar",
+          data: {
+            labels: weekLabels.length ? weekLabels : ["No Data"],
+            datasets: [
+              {
+                label: "Reps",
+                data: weekReps.length ? weekReps : [0],
+                backgroundColor: "rgba(59, 130, 246, 0.6)",
+                borderColor: "#3b82f6",
+                borderWidth: 1,
+                borderRadius: 6,
+                borderSkipped: false,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: "rgba(255, 255, 255, 0.05)" },
+                ticks: { stepSize: 1 },
+              },
+              x: {
+                grid: { display: false },
+              },
+            },
+          },
+        });
+
+        // ROM Progress Chart
+        const romCtx = document.getElementById("romChart").getContext("2d");
+
+        if (romChart) romChart.destroy();
+
+        romChart = new Chart(romCtx, {
+          type: "line",
+          data: {
+            labels: labels.length ? labels : ["No Data"],
+            datasets: [
+              {
+                label: "ROM",
+                data: avgScores.length ? avgScores.map((s) => s * 0.9) : [0], // Simulated ROM data
+                borderColor: "#f59e0b",
+                backgroundColor: "rgba(245, 158, 11, 0.1)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                grid: { color: "rgba(255, 255, 255, 0.05)" },
+                ticks: {
+                  callback: (value) => value + "°",
+                },
+              },
+              x: {
+                grid: { display: false },
+              },
+            },
+          },
+        });
+      }
+
+      function updateInsights(data) {
+        const stats = data.stats || {};
+
+        // Form insight
+        if (stats.avg_score >= 80) {
+          document.getElementById("insight-form").textContent =
+            "Excellent form! Keep maintaining your technique for consistent results.";
+        } else if (stats.avg_score >= 60) {
+          document.getElementById("insight-form").textContent =
+            "Good progress! Focus on keeping your torso stable and arms at shoulder height.";
+        } else if (stats.total_sessions > 0) {
+          document.getElementById("insight-form").textContent =
+            "Focus on slow, controlled movements. Quality over quantity!";
+        }
+
+        // Progress insight
+        if (stats.total_sessions >= 10) {
+          document.getElementById(
+            "insight-progress"
+          ).textContent = `You've completed ${stats.total_sessions} sessions! Your dedication is paying off.`;
+        } else if (stats.total_sessions >= 5) {
+          document.getElementById("insight-progress").textContent =
+            "Great start! Keep up the momentum to see more improvements.";
+        }
+
+        // Goal insight
+        if (stats.best_score >= 90) {
+          document.getElementById("insight-goal").textContent =
+            "You're performing at an elite level! Consider challenging yourself with longer sessions.";
+        } else if (stats.best_score >= 70) {
+          document.getElementById("insight-goal").textContent =
+            "You're close to mastering perfect form. Push for that 90+ score!";
+        }
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return "--";
+        const date = new Date(dateStr);
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+      }
+
+      function formatShortDate(dateStr) {
+        if (!dateStr) return "--";
+        const date = new Date(dateStr);
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      function getGradeFromScore(score) {
+        if (!score) return "--";
+        if (score >= 90) return "A+";
+        if (score >= 85) return "A";
+        if (score >= 80) return "A-";
+        if (score >= 75) return "B+";
+        if (score >= 70) return "B";
+        if (score >= 65) return "B-";
+        if (score >= 60) return "C+";
+        if (score >= 55) return "C";
+        return "F";
+      }
+
+      function getGradeClass(grade) {
+        if (grade.includes("A")) return "grade-a";
+        if (grade.includes("B")) return "grade-b";
+        if (grade.includes("C")) return "grade-c";
+        return "grade-f";
+      }
+
+      // Load data on page load
+      loadDashboardData();
+
+      // Refresh every 30 seconds
+      setInterval(loadDashboardData, 30000);
+    </script>
+  </body>
+</html>

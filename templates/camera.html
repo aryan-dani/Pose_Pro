@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Analysis - PosePro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <style>
+      .live-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .live-indicator::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        background: #ef4444;
+        border-radius: 50%;
+        animation: blink 1s ease-in-out infinite;
+      }
+
+      .live-indicator.tracking::before {
+        background: #10b981;
+      }
+
+      .live-indicator.tracking {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      /* Improved layout */
+      .analysis-layout {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: var(--space-xl);
+        margin-bottom: var(--space-xl);
+      }
+
+      @media (max-width: 1200px) {
+        .analysis-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Better video container */
+      .main-video-section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+      }
+
+      .video-wrapper {
+        position: relative;
+        background: var(--gray-900);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        border: 2px solid transparent;
+        transition: all var(--transition-base);
+      }
+
+      .video-wrapper.tracking {
+        border-color: var(--primary-400);
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+      }
+
+      .video-wrapper img {
+        width: 100%;
+        height: auto;
+        min-height: 400px;
+        max-height: 70vh;
+        object-fit: contain;
+        display: block;
+      }
+
+      .video-controls-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: var(--space-lg);
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+
+      .video-info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+      }
+
+      .video-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+      }
+
+      .video-subtitle {
+        font-size: 0.85rem;
+        color: var(--gray-400);
+      }
+
+      /* Side panel */
+      .side-panel {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+      }
+
+      /* Rep Counter Card */
+      .rep-card {
+        background: var(--gradient-card);
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: var(--space-xl);
+        text-align: center;
+      }
+
+      .rep-counter-large {
+        font-size: 5rem;
+        font-weight: 800;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+        margin-bottom: var(--space-sm);
+      }
+
+      .rep-label {
+        font-size: 0.875rem;
+        color: var(--gray-400);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      /* State indicator */
+      .state-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-sm);
+        padding: var(--space-md);
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: var(--space-md);
+      }
+
+      .state-idle {
+        background: rgba(100, 116, 139, 0.2);
+        color: var(--gray-400);
+      }
+
+      .state-up_phase {
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--primary-400);
+        animation: pulse-glow 1s ease-in-out infinite;
+      }
+
+      .state-down_phase {
+        background: rgba(59, 130, 246, 0.2);
+        color: var(--accent-400);
+        animation: pulse-glow 1s ease-in-out infinite;
+      }
+
+      .state-peak_confirmed {
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--warning);
+      }
+
+      @keyframes pulse-glow {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 20px 5px rgba(16, 185, 129, 0.2);
+        }
+      }
+
+      /* Control buttons */
+      .control-buttons {
+        display: flex;
+        gap: var(--space-md);
+      }
+
+      .control-buttons .btn {
+        flex: 1;
+      }
+
+      /* Metrics panel */
+      .metrics-panel {
+        background: var(--gradient-card);
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+
+      .metrics-header {
+        padding: var(--space-md) var(--space-lg);
+        background: rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-weight: 600;
+        color: var(--gray-200);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .metric-item {
+        padding: var(--space-md) var(--space-lg);
+        background: var(--gray-900);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .metric-icon {
+        font-size: 1.25rem;
+        margin-bottom: var(--space-xs);
+      }
+
+      .metric-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-100);
+      }
+
+      .metric-label {
+        font-size: 0.7rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .metric-bar {
+        width: 100%;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        margin-top: var(--space-sm);
+        overflow: hidden;
+      }
+
+      .metric-bar-fill {
+        height: 100%;
+        background: var(--primary-400);
+        border-radius: 2px;
+        transition: width 0.3s ease;
+      }
+
+      .metric-bar-fill.warning {
+        background: var(--warning);
+      }
+      .metric-bar-fill.danger {
+        background: var(--error);
+      }
+      .metric-bar-fill.good {
+        background: var(--success);
+      }
+
+      /* Score display */
+      .score-section {
+        padding: var(--space-lg);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .score-display {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .score-big {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--gray-100);
+      }
+
+      .grade-large {
+        font-size: 2rem;
+        font-weight: 800;
+        padding: var(--space-sm) var(--space-lg);
+        border-radius: var(--radius-lg);
+      }
+
+      /* Warnings panel */
+      .warnings-panel {
+        background: var(--gradient-card);
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: var(--space-lg);
+      }
+
+      .warnings-title {
+        font-weight: 600;
+        color: var(--gray-200);
+        margin-bottom: var(--space-md);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .warning-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--radius-md);
+        font-size: 0.85rem;
+        margin-bottom: var(--space-xs);
+      }
+
+      .warning-success {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--success);
+      }
+      .warning-warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+      }
+      .warning-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--error);
+      }
+
+      /* Secondary video (mesh view) */
+      .mesh-video-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-lg);
+      }
+
+      @media (max-width: 900px) {
+        .mesh-video-section {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .mesh-video-container {
+        background: var(--gray-900);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .mesh-video-header {
+        padding: var(--space-sm) var(--space-md);
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        font-size: 0.9rem;
+        color: var(--gray-300);
+      }
+
+      .mesh-video-container img {
+        width: 100%;
+        height: 250px;
+        object-fit: contain;
+        display: block;
+      }
+
+      /* Tips card */
+      .tips-card {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+      }
+
+      .tips-title {
+        color: var(--accent-400);
+        font-weight: 600;
+        margin-bottom: var(--space-md);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        color: var(--gray-300);
+        font-size: 0.85rem;
+        margin-bottom: var(--space-sm);
+      }
+
+      .tip-icon {
+        color: var(--accent-400);
+        flex-shrink: 0;
+      }
+
+      /* Session stats row */
+      .session-stats-row {
+        display: flex;
+        gap: var(--space-lg);
+        padding: var(--space-lg);
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: var(--radius-xl);
+        justify-content: space-around;
+      }
+
+      .session-stat {
+        text-align: center;
+      }
+
+      .session-stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--gray-100);
+      }
+
+      .session-stat-label {
+        font-size: 0.7rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">
+          <div class="navbar-logo">💪</div>
+          <span class="navbar-title">Pose<span>Pro</span></span>
+        </a>
+        <ul class="navbar-nav">
+          <li>
+            <a href="/" class="nav-link"
+              ><span class="nav-link-icon">🏠</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="/camera" class="nav-link active"
+              ><span class="nav-link-icon">📷</span> Live Analysis</a
+            >
+          </li>
+          <li>
+            <a href="/dashboard" class="nav-link"
+              ><span class="nav-link-icon">📊</span> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/leaderboard" class="nav-link"
+              ><span class="nav-link-icon">🏆</span> Leaderboard</a
+            >
+          </li>
+          <li>
+            <a href="/profile" class="nav-link"
+              ><span class="nav-link-icon">👤</span> Profile</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Page Header -->
+      <div class="flex justify-between items-center mb-xl">
+        <div>
+          <h1 class="text-gradient mb-sm">Live Analysis</h1>
+          <p class="text-muted">
+            Real-time form analysis with AI-powered pose detection
+          </p>
+        </div>
+        <div class="live-indicator" id="live-indicator">Live Feed</div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="analysis-layout">
+        <!-- Left: Main Video -->
+        <div class="main-video-section">
+          <div class="video-wrapper" id="main-video-wrapper">
+            <img src="/video_feed" id="normal-feed" alt="Live camera feed" />
+            <div class="video-controls-overlay">
+              <div class="video-info">
+                <div class="video-title">📷 Camera Feed</div>
+                <div class="video-subtitle">
+                  Stand 2-3m away • Keep full body visible
+                </div>
+              </div>
+              <div class="video-status">
+                <span>Active</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Stats -->
+          <div class="session-stats-row">
+            <div class="session-stat">
+              <div class="session-stat-value" id="session-duration">0:00</div>
+              <div class="session-stat-label">Duration</div>
+            </div>
+            <div class="session-stat">
+              <div class="session-stat-value" id="session-avg">--</div>
+              <div class="session-stat-label">Avg Score</div>
+            </div>
+            <div class="session-stat">
+              <div class="session-stat-value" id="session-best">--</div>
+              <div class="session-stat-label">Best Score</div>
+            </div>
+            <div class="session-stat">
+              <div class="session-stat-value" id="total-reps-session">0</div>
+              <div class="session-stat-label">Total Reps</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Side Panel -->
+        <div class="side-panel">
+          <!-- Rep Counter -->
+          <div class="rep-card">
+            <div class="rep-counter-large" id="rep-count">0</div>
+            <div class="rep-label">Reps Completed</div>
+            <div class="state-indicator state-idle" id="state-indicator">
+              <span id="state-icon">⏸️</span>
+              <span id="state-text">Ready</span>
+            </div>
+          </div>
+
+          <!-- Control Buttons -->
+          <div class="control-buttons">
+            <button
+              class="btn btn-primary btn-lg"
+              id="start-btn"
+              onclick="startTracking()"
+            >
+              <span>▶</span> Start
+            </button>
+            <button
+              class="btn btn-danger btn-lg"
+              id="stop-btn"
+              onclick="stopTracking()"
+              disabled
+            >
+              <span>⏹</span> Stop
+            </button>
+            <button
+              class="btn btn-secondary"
+              id="reset-btn"
+              onclick="resetSession()"
+            >
+              <span>🔄</span>
+            </button>
+          </div>
+
+          <!-- Metrics Panel -->
+          <div class="metrics-panel">
+            <div class="metrics-header"><span>📊</span> Real-Time Metrics</div>
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <span class="metric-icon">📐</span>
+                <div class="metric-value" id="rom-value">0°</div>
+                <div class="metric-label">ROM</div>
+                <div class="metric-bar">
+                  <div
+                    class="metric-bar-fill"
+                    id="rom-bar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+              <div class="metric-item">
+                <span class="metric-icon">⚖️</span>
+                <div class="metric-value" id="symmetry-value">0°</div>
+                <div class="metric-label">Symmetry Diff</div>
+                <div class="metric-bar">
+                  <div
+                    class="metric-bar-fill good"
+                    id="symmetry-bar"
+                    style="width: 100%"
+                  ></div>
+                </div>
+              </div>
+              <div class="metric-item">
+                <span class="metric-icon">🎯</span>
+                <div class="metric-value" id="torso-value">0°</div>
+                <div class="metric-label">Torso Tilt</div>
+                <div class="metric-bar">
+                  <div
+                    class="metric-bar-fill good"
+                    id="torso-bar"
+                    style="width: 100%"
+                  ></div>
+                </div>
+              </div>
+              <div class="metric-item">
+                <span class="metric-icon">💪</span>
+                <div class="metric-value" id="elbow-value">170°</div>
+                <div class="metric-label">Elbow Angle</div>
+                <div class="metric-bar">
+                  <div
+                    class="metric-bar-fill good"
+                    id="elbow-bar"
+                    style="width: 100%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Score Section -->
+            <div class="score-section">
+              <div class="score-display">
+                <div>
+                  <div class="metric-label">Overall Score</div>
+                  <div class="score-big" id="score-value">--</div>
+                </div>
+                <div class="grade-large grade-f" id="grade-badge">--</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Warnings Panel -->
+          <div class="warnings-panel">
+            <div class="warnings-title"><span>💬</span> Form Feedback</div>
+            <div id="warnings-list">
+              <div class="warning-item warning-success">
+                <span>✓</span> Position yourself in frame
+              </div>
+              <div class="warning-item warning-success">
+                <span>✓</span> Click "Start" to begin
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Secondary Views -->
+      <div class="mesh-video-section mb-xl">
+        <div class="mesh-video-container">
+          <div class="mesh-video-header">
+            <span>🦴</span> Pose Analysis View
+          </div>
+          <img src="/mesh_feed" id="mesh-feed" alt="Pose analysis view" />
+        </div>
+
+        <div class="tips-card">
+          <div class="tips-title"><span>💡</span> Quick Tips</div>
+          <div class="tip-item">
+            <span class="tip-icon">•</span>
+            <span>Stand 2-3 meters from camera</span>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">•</span>
+            <span>Keep entire body visible in frame</span>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">•</span>
+            <span>Wear contrasting clothing</span>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">•</span>
+            <span>Perform slow, controlled movements</span>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">•</span>
+            <span>Keep slight bend in elbows (160-180°)</span>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">•</span>
+            <span>Raise arms to shoulder height (70-90°)</span>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">•</span>
+            <span>One rep = raise up + lower down</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>PosePro v2.0 — AI-Powered Form Analysis</p>
+    </footer>
+
+    <script>
+      let updateInterval;
+      let isTracking = false;
+      let sessionStartTime = null;
+      let durationInterval = null;
+
+      async function updateMetrics() {
+        try {
+          const response = await fetch("/api/status");
+          const data = await response.json();
+
+          // Update tracking status
+          isTracking = data.tracking_active;
+          document.getElementById("start-btn").disabled = data.tracking_active;
+          document.getElementById("stop-btn").disabled = !data.tracking_active;
+
+          // Update video container class
+          const videoWrapper = document.getElementById("main-video-wrapper");
+          const liveIndicator = document.getElementById("live-indicator");
+          if (data.tracking_active) {
+            videoWrapper.classList.add("tracking");
+            liveIndicator.classList.add("tracking");
+            liveIndicator.textContent = "Tracking Active";
+          } else {
+            videoWrapper.classList.remove("tracking");
+            liveIndicator.classList.remove("tracking");
+            liveIndicator.textContent = "Live Feed";
+          }
+
+          // Update rep counter
+          document.getElementById("rep-count").textContent =
+            data.rep_count || 0;
+          document.getElementById("total-reps-session").textContent =
+            data.rep_count || 0;
+
+          // Update state indicator
+          const stateIndicator = document.getElementById("state-indicator");
+          const stateText = document.getElementById("state-text");
+          const stateIcon = document.getElementById("state-icon");
+          const state = data.rep_state || "idle";
+
+          stateIndicator.className = "state-indicator state-" + state;
+
+          const stateInfo = {
+            idle: { text: "Ready", icon: "⏸️" },
+            up_phase: { text: "Raising", icon: "⬆️" },
+            peak_confirmed: { text: "Peak", icon: "🔝" },
+            down_phase: { text: "Lowering", icon: "⬇️" },
+          };
+
+          stateText.textContent = stateInfo[state]?.text || state.toUpperCase();
+          stateIcon.textContent = stateInfo[state]?.icon || "⏸️";
+
+          // Update latest metrics if available
+          if (data.latest_score !== undefined) {
+            const score = data.latest_score;
+            const grade = data.latest_grade || "--";
+
+            document.getElementById("score-value").textContent =
+              score.toFixed(0);
+
+            const gradeEl = document.getElementById("grade-badge");
+            gradeEl.textContent = grade;
+            gradeEl.className = "grade-large ";
+            if (grade.includes("A")) gradeEl.className += "grade-a";
+            else if (grade.includes("B")) gradeEl.className += "grade-b";
+            else if (grade.includes("C")) gradeEl.className += "grade-c";
+            else gradeEl.className += "grade-f";
+
+            // Update ROM
+            if (data.latest_rom !== undefined) {
+              document.getElementById(
+                "rom-value"
+              ).textContent = `${data.latest_rom.toFixed(1)}°`;
+              const romPercent = Math.min(100, (data.latest_rom / 90) * 100);
+              const romBar = document.getElementById("rom-bar");
+              romBar.style.width = `${romPercent}%`;
+              romBar.className =
+                "metric-bar-fill " +
+                (data.latest_rom >= 70
+                  ? "good"
+                  : data.latest_rom >= 50
+                  ? "warning"
+                  : "danger");
+            }
+
+            // Update symmetry
+            if (data.latest_symmetry !== undefined) {
+              document.getElementById(
+                "symmetry-value"
+              ).textContent = `${data.latest_symmetry.toFixed(1)}°`;
+              const symmetryPercent = Math.max(
+                0,
+                100 - (data.latest_symmetry / 15) * 100
+              );
+              const symmetryBar = document.getElementById("symmetry-bar");
+              symmetryBar.style.width = `${symmetryPercent}%`;
+              symmetryBar.className =
+                "metric-bar-fill " +
+                (data.latest_symmetry <= 5
+                  ? "good"
+                  : data.latest_symmetry <= 10
+                  ? "warning"
+                  : "danger");
+            }
+          }
+
+          // Update session stats
+          if (data.session_avg_score) {
+            document.getElementById("session-avg").textContent =
+              data.session_avg_score.toFixed(0);
+          }
+          if (data.session_best_score) {
+            document.getElementById("session-best").textContent =
+              data.session_best_score.toFixed(0);
+          }
+
+          // Update warnings
+          if (data.latest_warnings && data.latest_warnings.length > 0) {
+            updateWarnings(data.latest_warnings);
+          }
+        } catch (error) {
+          console.error("Error updating metrics:", error);
+        }
+      }
+
+      function updateWarnings(warnings) {
+        const warningsList = document.getElementById("warnings-list");
+
+        const warningMessages = {
+          bilateral_asymmetry: {
+            text: "Asymmetry detected - balance your arms",
+            type: "warning",
+          },
+          torso_instability: {
+            text: "Torso movement detected - stay stable",
+            type: "warning",
+          },
+          insufficient_rom: {
+            text: "Arms not reaching shoulder height",
+            type: "error",
+          },
+          excessive_rom: { text: "Arms raised too high", type: "warning" },
+          elbow_bending: {
+            text: "Too much elbow bend detected",
+            type: "warning",
+          },
+        };
+
+        let html = "";
+        const activeWarnings = new Set(warnings);
+
+        // Add success messages for what's going well
+        if (!activeWarnings.has("bilateral_asymmetry")) {
+          html += `<div class="warning-item warning-success"><span>✓</span> Good arm symmetry</div>`;
+        }
+        if (!activeWarnings.has("torso_instability")) {
+          html += `<div class="warning-item warning-success"><span>✓</span> Stable torso position</div>`;
+        }
+        if (
+          !activeWarnings.has("insufficient_rom") &&
+          !activeWarnings.has("excessive_rom")
+        ) {
+          html += `<div class="warning-item warning-success"><span>✓</span> Good range of motion</div>`;
+        }
+
+        // Add actual warnings
+        warnings.forEach((warning) => {
+          if (warningMessages[warning]) {
+            const msg = warningMessages[warning];
+            const typeClass =
+              msg.type === "error" ? "warning-error" : "warning-warning";
+            html += `<div class="warning-item ${typeClass}"><span>⚠</span> ${msg.text}</div>`;
+          }
+        });
+
+        warningsList.innerHTML =
+          html ||
+          `<div class="warning-item warning-success"><span>✓</span> Excellent form!</div>`;
+      }
+
+      function updateDuration() {
+        if (sessionStartTime) {
+          const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+          const mins = Math.floor(elapsed / 60);
+          const secs = elapsed % 60;
+          document.getElementById(
+            "session-duration"
+          ).textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+        }
+      }
+
+      async function startTracking() {
+        try {
+          const response = await fetch("/api/start_tracking", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            sessionStartTime = Date.now();
+            durationInterval = setInterval(updateDuration, 1000);
+            updateMetrics();
+          }
+        } catch (error) {
+          console.error("Error starting tracking:", error);
+        }
+      }
+
+      async function stopTracking() {
+        try {
+          const response = await fetch("/api/stop_tracking", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            if (durationInterval) {
+              clearInterval(durationInterval);
+              durationInterval = null;
+            }
+            updateMetrics();
+          }
+        } catch (error) {
+          console.error("Error stopping tracking:", error);
+        }
+      }
+
+      async function resetSession() {
+        if (confirm("Reset session? All current data will be lost.")) {
+          try {
+            const response = await fetch("/api/reset", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              // Reset UI
+              document.getElementById("rep-count").textContent = "0";
+              document.getElementById("score-value").textContent = "--";
+              document.getElementById("rom-value").textContent = "0°";
+              document.getElementById("symmetry-value").textContent = "0°";
+              document.getElementById("torso-value").textContent = "0°";
+              document.getElementById("elbow-value").textContent = "170°";
+              document.getElementById("grade-badge").textContent = "--";
+              document.getElementById("grade-badge").className =
+                "grade-large grade-f";
+              document.getElementById("session-duration").textContent = "0:00";
+              document.getElementById("session-avg").textContent = "--";
+              document.getElementById("session-best").textContent = "--";
+              document.getElementById("total-reps-session").textContent = "0";
+
+              // Reset progress bars
+              document.getElementById("rom-bar").style.width = "0%";
+              document.getElementById("symmetry-bar").style.width = "100%";
+              document.getElementById("torso-bar").style.width = "100%";
+              document.getElementById("elbow-bar").style.width = "100%";
+
+              // Reset state
+              sessionStartTime = null;
+              if (durationInterval) {
+                clearInterval(durationInterval);
+                durationInterval = null;
+              }
+
+              // Reset warnings
+              document.getElementById("warnings-list").innerHTML = `
+                <div class="warning-item warning-success"><span>✓</span> Session reset - ready to start</div>
+              `;
+
+              updateMetrics();
+            }
+          } catch (error) {
+            console.error("Error resetting session:", error);
+          }
+        }
+      }
+
+      // Start updating metrics
+      updateInterval = setInterval(updateMetrics, 500);
+      updateMetrics();
+    </script>
+  </body>
+</html>

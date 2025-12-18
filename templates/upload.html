@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Upload - PosePro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">
+          <div class="navbar-logo">💪</div>
+          <span class="navbar-title">Pose<span>Pro</span></span>
+        </a>
+        <ul class="navbar-nav">
+          <li>
+            <a href="/" class="nav-link"
+              ><span class="nav-link-icon">🏠</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="/camera" class="nav-link"
+              ><span class="nav-link-icon">📷</span> Live Analysis</a
+            >
+          </li>
+          <li>
+            <a href="/upload" class="nav-link active"
+              ><span class="nav-link-icon">📤</span> Upload</a
+            >
+          </li>
+          <li>
+            <a href="/dashboard" class="nav-link"
+              ><span class="nav-link-icon">📊</span> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/leaderboard" class="nav-link"
+              ><span class="nav-link-icon">🏆</span> Leaderboard</a
+            >
+          </li>
+          <li>
+            <a href="/profile" class="nav-link"
+              ><span class="nav-link-icon">👤</span> Profile</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container container-md">
+      <!-- Page Header -->
+      <div class="mb-xl">
+        <h1 class="text-gradient mb-sm">Video Upload Analysis</h1>
+        <p class="text-muted">
+          Upload a video of your shoulder raises for detailed form analysis and
+          scoring
+        </p>
+      </div>
+
+      <!-- Upload Area -->
+      <div class="card upload-zone" id="upload-area">
+        <div class="upload-icon">📤</div>
+        <h2 class="text-white mb-sm">Upload Your Exercise Video</h2>
+        <p class="text-muted mb-lg">
+          Supported formats: MP4, MOV, AVI, WebM (Max 100MB)
+        </p>
+
+        <input type="file" id="file-input" class="hidden" accept="video/*" />
+        <label for="file-input" class="btn btn-primary btn-lg mb-md">
+          <span>Choose Video File</span>
+        </label>
+
+        <div class="divider-text mb-md">OR</div>
+
+        <button class="btn btn-secondary" id="sample-btn">
+          Try with Sample Video
+        </button>
+
+        <p class="text-muted mt-lg" style="font-size: 0.85rem">
+          Drag and drop your video file anywhere in this area
+        </p>
+      </div>
+
+      <!-- Video Preview -->
+      <div class="card hidden" id="video-preview">
+        <video
+          controls
+          class="video-feed"
+          id="preview-video"
+          style="max-height: 400px"
+        >
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <!-- Loading State -->
+      <div class="hidden text-center" id="loading" style="padding: 60px 20px">
+        <div class="loading-spinner mx-auto mb-lg"></div>
+        <p class="text-muted">Analyzing your shoulder raise form...</p>
+      </div>
+
+      <!-- Error Message -->
+      <div class="alert alert-error hidden" id="error-message"></div>
+
+      <!-- Analysis Results -->
+      <div class="card hidden" id="analysis-results">
+        <div class="card-header flex items-center gap-md">
+          <span style="font-size: 1.5rem">📊</span>
+          <h2 class="text-white">Analysis Results</h2>
+        </div>
+
+        <div class="card-body">
+          <div class="stats-grid mb-xl">
+            <div class="stat-card">
+              <div class="stat-icon">🎯</div>
+              <div class="stat-value" id="result-score">85.2</div>
+              <div class="stat-label">Overall Score</div>
+              <div class="grade grade-a mt-sm" id="result-grade">A</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">🔄</div>
+              <div class="stat-value" id="result-reps">12</div>
+              <div class="stat-label">Total Reps</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">📐</div>
+              <div class="stat-value" id="result-rom">78.5°</div>
+              <div class="stat-label">Average ROM</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">⚖️</div>
+              <div class="stat-value" id="result-symmetry">3.2°</div>
+              <div class="stat-label">Symmetry Diff</div>
+            </div>
+          </div>
+
+          <!-- Recommendations -->
+          <div class="card" style="background: rgba(255, 255, 255, 0.03)">
+            <div class="card-header">
+              <h3 class="text-white flex items-center gap-sm">
+                <span>💡</span> Recommendations
+              </h3>
+            </div>
+            <div class="card-body" id="recommendations-list">
+              <!-- Recommendations will be inserted here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Box -->
+      <div class="card mt-xl">
+        <div class="card-header">
+          <h3 class="text-white flex items-center gap-sm">
+            <span>📋</span> Video Requirements for Best Results
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-2 gap-md">
+            <div class="flex items-start gap-sm">
+              <span class="text-primary">📐</span>
+              <span class="text-muted"
+                >Video should show your full body from head to toe</span
+              >
+            </div>
+            <div class="flex items-start gap-sm">
+              <span class="text-primary">💡</span>
+              <span class="text-muted"
+                >Good lighting with no shadows on your body</span
+              >
+            </div>
+            <div class="flex items-start gap-sm">
+              <span class="text-primary">👕</span>
+              <span class="text-muted"
+                >Wear clothing that contrasts with your background</span
+              >
+            </div>
+            <div class="flex items-start gap-sm">
+              <span class="text-primary">🎯</span>
+              <span class="text-muted"
+                >Camera should be stable (use tripod if possible)</span
+              >
+            </div>
+            <div class="flex items-start gap-sm">
+              <span class="text-primary">⏱️</span>
+              <span class="text-muted"
+                >Include 3-10 reps for comprehensive analysis</span
+              >
+            </div>
+            <div class="flex items-start gap-sm">
+              <span class="text-primary">📊</span>
+              <span class="text-muted"
+                >Analysis includes ROM, symmetry, stability scores</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>PosePro v2.0 — AI-Powered Form Analysis</p>
+    </footer>
+
+    <style>
+      .upload-zone {
+        padding: 60px 40px;
+        text-align: center;
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .upload-zone:hover {
+        border-color: var(--primary);
+        background: rgba(0, 255, 136, 0.05);
+      }
+
+      .upload-zone.dragover {
+        border-color: var(--primary);
+        background: rgba(0, 255, 136, 0.1);
+      }
+
+      .upload-icon {
+        font-size: 4rem;
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .divider-text {
+        position: relative;
+        color: var(--text-muted);
+      }
+
+      .divider-text::before,
+      .divider-text::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .divider-text::before {
+        left: 0;
+      }
+      .divider-text::after {
+        right: 0;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .alert {
+        padding: var(--spacing-md) var(--spacing-lg);
+        border-radius: var(--radius-md);
+        margin-top: var(--spacing-lg);
+      }
+
+      .alert-error {
+        background: rgba(255, 71, 87, 0.1);
+        border: 1px solid rgba(255, 71, 87, 0.3);
+        color: #ff4757;
+      }
+
+      .recommendation-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .recommendation-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .recommendation-icon {
+        font-size: 1.2rem;
+      }
+
+      .recommendation-text {
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+
+      .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (max-width: 768px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+
+    <script>
+      const uploadArea = document.getElementById("upload-area");
+      const fileInput = document.getElementById("file-input");
+      const videoPreview = document.getElementById("video-preview");
+      const previewVideo = document.getElementById("preview-video");
+      const loading = document.getElementById("loading");
+      const errorMessage = document.getElementById("error-message");
+      const analysisResults = document.getElementById("analysis-results");
+      const sampleBtn = document.getElementById("sample-btn");
+
+      // Drag and drop functionality
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ["dragenter", "dragover"].forEach((eventName) => {
+        uploadArea.addEventListener(
+          eventName,
+          () => uploadArea.classList.add("dragover"),
+          false
+        );
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(
+          eventName,
+          () => uploadArea.classList.remove("dragover"),
+          false
+        );
+      });
+
+      uploadArea.addEventListener(
+        "drop",
+        (e) => handleFiles(e.dataTransfer.files),
+        false
+      );
+      fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
+
+      // Sample video button
+      sampleBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        videoPreview.classList.add("hidden");
+        loading.classList.remove("hidden");
+        errorMessage.classList.add("hidden");
+
+        setTimeout(() => {
+          loading.classList.add("hidden");
+          showSampleResults();
+        }, 3000);
+      });
+
+      function handleFiles(files) {
+        if (files.length === 0) return;
+
+        const file = files[0];
+
+        if (!file.type.startsWith("video/")) {
+          showError("Please upload a video file (MP4, MOV, AVI, or WebM)");
+          return;
+        }
+
+        if (file.size > 100 * 1024 * 1024) {
+          showError(
+            "File size exceeds 100MB limit. Please upload a smaller video."
+          );
+          return;
+        }
+
+        const videoURL = URL.createObjectURL(file);
+        previewVideo.src = videoURL;
+        videoPreview.classList.remove("hidden");
+
+        analysisResults.classList.add("hidden");
+        errorMessage.classList.add("hidden");
+        loading.classList.remove("hidden");
+
+        setTimeout(() => {
+          loading.classList.add("hidden");
+          analyzeVideo(file);
+        }, 2000);
+      }
+
+      function analyzeVideo(file) {
+        showMockResults();
+      }
+
+      function showMockResults() {
+        const mockResults = {
+          score: 85.2,
+          grade: "A",
+          reps: 12,
+          rom: 78.5,
+          symmetry: 3.2,
+          recommendations: [
+            {
+              icon: "✓",
+              text: "Excellent torso stability maintained throughout",
+            },
+            { icon: "↗️", text: "Try to keep elbows slightly more extended" },
+            { icon: "⏱️", text: "Control the descent phase a bit more" },
+          ],
+        };
+
+        updateResults(mockResults);
+      }
+
+      function showSampleResults() {
+        const sampleResults = {
+          score: 92.5,
+          grade: "A+",
+          reps: 8,
+          rom: 82.3,
+          symmetry: 1.8,
+          recommendations: [
+            { icon: "🏆", text: "Perfect form! Excellent technique" },
+            { icon: "🏆", text: "Ideal range of motion achieved" },
+            { icon: "🏆", text: "Great control throughout movement" },
+          ],
+        };
+
+        updateResults(sampleResults);
+      }
+
+      function updateResults(results) {
+        document.getElementById("result-score").textContent =
+          results.score.toFixed(1);
+
+        const gradeEl = document.getElementById("result-grade");
+        gradeEl.textContent = results.grade;
+        gradeEl.className = "grade mt-sm";
+        if (results.score >= 90) gradeEl.classList.add("grade-a-plus");
+        else if (results.score >= 80) gradeEl.classList.add("grade-a");
+        else if (results.score >= 70) gradeEl.classList.add("grade-b");
+        else gradeEl.classList.add("grade-c");
+
+        document.getElementById("result-reps").textContent = results.reps;
+        document.getElementById(
+          "result-rom"
+        ).textContent = `${results.rom.toFixed(1)}°`;
+        document.getElementById(
+          "result-symmetry"
+        ).textContent = `${results.symmetry.toFixed(1)}°`;
+
+        const recList = document.getElementById("recommendations-list");
+        recList.innerHTML = results.recommendations
+          .map(
+            (rec) => `
+                <div class="recommendation-item">
+                    <span class="recommendation-icon">${rec.icon}</span>
+                    <span class="recommendation-text">${rec.text}</span>
+                </div>
+            `
+          )
+          .join("");
+
+        analysisResults.classList.remove("hidden");
+      }
+
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.remove("hidden");
+        loading.classList.add("hidden");
+        analysisResults.classList.add("hidden");
+      }
+    </script>
+  </body>
+</html>

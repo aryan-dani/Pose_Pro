@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Assistant - PosePro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">
+          <div class="navbar-logo">💪</div>
+          <span class="navbar-title">Pose<span>Pro</span></span>
+        </a>
+        <ul class="navbar-nav">
+          <li>
+            <a href="/" class="nav-link"
+              ><span class="nav-link-icon">🏠</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="/camera" class="nav-link"
+              ><span class="nav-link-icon">📷</span> Live Analysis</a
+            >
+          </li>
+          <li>
+            <a href="/dashboard" class="nav-link"
+              ><span class="nav-link-icon">📊</span> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/chat" class="nav-link active"
+              ><span class="nav-link-icon">💬</span> Assistant</a
+            >
+          </li>
+          <li>
+            <a href="/leaderboard" class="nav-link"
+              ><span class="nav-link-icon">🏆</span> Leaderboard</a
+            >
+          </li>
+          <li>
+            <a href="/profile" class="nav-link"
+              ><span class="nav-link-icon">👤</span> Profile</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container container-md">
+      <!-- Page Header -->
+      <div class="mb-xl">
+        <h1 class="text-gradient mb-sm">Form Assistant</h1>
+        <p class="text-muted">
+          Get expert advice on shoulder raise technique, form corrections, and
+          training tips.
+        </p>
+      </div>
+
+      <!-- Chat Container -->
+      <div class="card chat-container">
+        <div class="card-header flex items-center gap-md">
+          <div class="message-avatar message-avatar-bot">🤖</div>
+          <div>
+            <h3 class="text-white">PosePro Assistant</h3>
+            <p class="text-muted" style="font-size: 0.85rem">
+              AI-powered form guidance
+            </p>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <!-- Welcome message -->
+          <div class="message bot">
+            <div class="message-avatar message-avatar-bot">🤖</div>
+            <div class="message-content">
+              <div class="message-header">
+                <span class="message-sender">Assistant</span>
+              </div>
+              <div class="message-text">
+                Welcome! I'm your shoulder raise form assistant. I can help you
+                with:
+                <br /><br />
+                • Proper lateral raise technique<br />
+                • Common mistakes to avoid<br />
+                • Form corrections and tips<br />
+                • Understanding your scores<br />
+                <br />
+                Ask me anything about shoulder raises!
+              </div>
+            </div>
+          </div>
+
+          <!-- Load existing messages -->
+          {% for msg in chat_history %}
+          <div class="message {{ msg.role }}">
+            <div
+              class="message-avatar {% if msg.role == 'user' %}message-avatar-user{% elif msg.role == 'bot' %}message-avatar-bot{% else %}message-avatar-system{% endif %}"
+            >
+              {% if msg.role == 'user' %}👤{% elif msg.role == 'bot' %}🤖{% else
+              %}⚡{% endif %}
+            </div>
+            <div class="message-content">
+              <div class="message-header">
+                <span class="message-sender">
+                  {% if msg.role == 'user' %}You{% elif msg.role == 'bot'
+                  %}Assistant{% else %}System{% endif %}
+                </span>
+                <span class="message-time">{{ msg.timestamp }}</span>
+              </div>
+              <div class="message-text">{{ msg.message }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="message bot hidden" id="typing-indicator">
+          <div class="message-avatar message-avatar-bot">🤖</div>
+          <div class="message-content">
+            <div
+              class="message-text"
+              style="display: flex; align-items: center; gap: 8px"
+            >
+              <span>Assistant is typing</span>
+              <span class="typing-dots">
+                <span style="animation: typing 1s infinite">.</span>
+                <span style="animation: typing 1s infinite 0.2s">.</span>
+                <span style="animation: typing 1s infinite 0.4s">.</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="chat-input-container">
+            <input
+              type="text"
+              class="form-input"
+              id="message-input"
+              placeholder="Ask about shoulder raise technique..."
+              style="flex: 1"
+            />
+            <button
+              class="btn btn-primary"
+              id="send-btn"
+              onclick="sendMessage()"
+            >
+              <span>Send</span>
+            </button>
+          </div>
+
+          <div class="quick-actions">
+            <button
+              class="quick-action-btn"
+              onclick="askQuestion('What is proper lateral raise form?')"
+            >
+              Proper Form
+            </button>
+            <button
+              class="quick-action-btn"
+              onclick="askQuestion('What are common mistakes in lateral raises?')"
+            >
+              Common Mistakes
+            </button>
+            <button
+              class="quick-action-btn"
+              onclick="askQuestion('How should I position my elbows?')"
+            >
+              Elbow Position
+            </button>
+            <button
+              class="quick-action-btn"
+              onclick="askQuestion('How high should I raise my arms?')"
+            >
+              Arm Height
+            </button>
+            <button
+              class="quick-action-btn"
+              onclick="askQuestion('What do the scores mean?')"
+            >
+              Score Guide
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>PosePro v2.0 — AI-Powered Form Analysis</p>
+    </footer>
+
+    <style>
+      @keyframes typing {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      .typing-dots span {
+        display: inline-block;
+      }
+    </style>
+
+    <script>
+      const chatMessages = document.getElementById("chat-messages");
+      const messageInput = document.getElementById("message-input");
+      const sendBtn = document.getElementById("send-btn");
+      const typingIndicator = document.getElementById("typing-indicator");
+
+      // Auto-scroll to bottom
+      function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      scrollToBottom();
+
+      // Add message to chat
+      function addMessage(role, message, timestamp) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${role}`;
+
+        let avatarIcon = "🤖";
+        let avatarClass = "message-avatar-bot";
+        let senderName = "Assistant";
+
+        if (role === "user") {
+          avatarIcon = "👤";
+          avatarClass = "message-avatar-user";
+          senderName = "You";
+        } else if (role === "system") {
+          avatarIcon = "⚡";
+          avatarClass = "message-avatar-system";
+          senderName = "System";
+        }
+
+        const time =
+          timestamp ||
+          new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+        messageDiv.innerHTML = `
+                <div class="message-avatar ${avatarClass}">${avatarIcon}</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-sender">${senderName}</span>
+                        <span class="message-time">${time}</span>
+                    </div>
+                    <div class="message-text">${message}</div>
+                </div>
+            `;
+
+        chatMessages.appendChild(messageDiv);
+        scrollToBottom();
+      }
+
+      // Ask question from quick buttons
+      function askQuestion(question) {
+        messageInput.value = question;
+        sendMessage();
+      }
+
+      // Send message
+      async function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        // Add user message
+        addMessage("user", message);
+        messageInput.value = "";
+        sendBtn.disabled = true;
+
+        // Show typing indicator
+        typingIndicator.classList.remove("hidden");
+        scrollToBottom();
+
+        try {
+          const response = await fetch("/api/chat/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: message }),
+          });
+
+          const data = await response.json();
+
+          // Hide typing indicator
+          typingIndicator.classList.add("hidden");
+
+          if (data.success) {
+            addMessage("bot", data.response);
+          } else {
+            addMessage(
+              "bot",
+              "Sorry, I encountered an error. Please try again."
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          typingIndicator.classList.add("hidden");
+          addMessage(
+            "bot",
+            "Sorry, I could not process your request. Please try again."
+          );
+        }
+
+        sendBtn.disabled = false;
+        messageInput.focus();
+      }
+
+      // Enter key support
+      messageInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          sendMessage();
+        }
+      });
+
+      // Focus input on load
+      messageInput.focus();
+    </script>
+  </body>
+</html>

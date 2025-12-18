@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - PosePro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <style>
+      .profile-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xl);
+        padding: var(--space-2xl);
+        background: var(--gradient-card);
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: var(--space-xl);
+      }
+
+      .avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+      }
+
+      .profile-info {
+        flex: 1;
+      }
+
+      .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--gray-50);
+        margin-bottom: var(--space-xs);
+      }
+
+      .profile-level {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-xs) var(--space-md);
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--primary-400);
+        border-radius: var(--radius-full);
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: var(--space-md);
+      }
+
+      .profile-bio {
+        color: var(--gray-400);
+        max-width: 500px;
+      }
+
+      .profile-stats-row {
+        display: flex;
+        gap: var(--space-xl);
+        margin-top: var(--space-lg);
+      }
+
+      .profile-stat {
+        text-align: center;
+      }
+
+      .profile-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-100);
+      }
+
+      .profile-stat-label {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+      }
+
+      .edit-form {
+        display: none;
+      }
+
+      .edit-form.active {
+        display: block;
+      }
+
+      .color-picker {
+        display: flex;
+        gap: var(--space-sm);
+        flex-wrap: wrap;
+      }
+
+      .color-option {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all var(--transition-base);
+      }
+
+      .color-option:hover {
+        transform: scale(1.1);
+      }
+
+      .color-option.selected {
+        border-color: white;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+
+      .achievement-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: var(--space-md);
+      }
+
+      .achievement-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        text-align: center;
+        transition: all var(--transition-base);
+      }
+
+      .achievement-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary-400);
+      }
+
+      .achievement-icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--space-sm);
+      }
+
+      .achievement-name {
+        font-weight: 600;
+        color: var(--gray-200);
+        font-size: 0.9rem;
+        margin-bottom: var(--space-xs);
+      }
+
+      .achievement-desc {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+      }
+
+      .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        background: var(--gradient-primary);
+        border-radius: var(--radius-full);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--gray-900);
+        box-shadow: var(--shadow-glow);
+      }
+
+      .select-input {
+        width: 100%;
+        padding: var(--space-md) var(--space-lg);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        color: var(--gray-100);
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .select-input:focus {
+        outline: none;
+        border-color: var(--primary-400);
+      }
+
+      .select-input option {
+        background: var(--gray-800);
+        color: var(--gray-100);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">
+          <div class="navbar-logo">💪</div>
+          <span class="navbar-title">Pose<span>Pro</span></span>
+        </a>
+        <ul class="navbar-nav">
+          <li>
+            <a href="/" class="nav-link"
+              ><span class="nav-link-icon">🏠</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="/camera" class="nav-link"
+              ><span class="nav-link-icon">📷</span> Live Analysis</a
+            >
+          </li>
+          <li>
+            <a href="/dashboard" class="nav-link"
+              ><span class="nav-link-icon">📊</span> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/leaderboard" class="nav-link"
+              ><span class="nav-link-icon">🏆</span> Leaderboard</a
+            >
+          </li>
+          <li>
+            <a href="/profile" class="nav-link active"
+              ><span class="nav-link-icon">👤</span> Profile</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Profile Header -->
+      <div class="profile-header" id="profile-view">
+        <div class="avatar-large" id="avatar" style="background: #10b981">
+          A
+        </div>
+        <div class="profile-info">
+          <h1 class="profile-name" id="display-name">Athlete</h1>
+          <span class="profile-level" id="experience-badge">
+            <span>🌱</span> <span id="experience-text">Beginner</span>
+          </span>
+          <p class="profile-bio" id="bio">
+            Set up your profile to track your progress!
+          </p>
+
+          <div class="profile-stats-row">
+            <div class="profile-stat">
+              <div class="profile-stat-value" id="stat-sessions">0</div>
+              <div class="profile-stat-label">Sessions</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-value" id="stat-reps">0</div>
+              <div class="profile-stat-label">Total Reps</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-value" id="stat-avg">--</div>
+              <div class="profile-stat-label">Avg Score</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-value" id="stat-best">--</div>
+              <div class="profile-stat-label">Best Score</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="toggleEdit()">
+          <span>✏️</span> Edit Profile
+        </button>
+      </div>
+
+      <!-- Edit Form -->
+      <div class="card edit-form mb-xl" id="edit-form">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-icon card-icon-primary">✏️</span>
+            Edit Profile
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="stats-grid" style="grid-template-columns: 1fr 1fr">
+            <div class="form-group">
+              <label class="form-label">Display Name</label>
+              <input
+                type="text"
+                class="form-input"
+                id="edit-name"
+                placeholder="Your name"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email (optional)</label>
+              <input
+                type="email"
+                class="form-input"
+                id="edit-email"
+                placeholder="your@email.com"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Bio</label>
+            <input
+              type="text"
+              class="form-input"
+              id="edit-bio"
+              placeholder="Tell us about your fitness journey..."
+            />
+          </div>
+
+          <div class="stats-grid" style="grid-template-columns: 1fr 1fr">
+            <div class="form-group">
+              <label class="form-label">Fitness Goal</label>
+              <select class="select-input" id="edit-goal">
+                <option value="general">General Fitness</option>
+                <option value="strength">Build Strength</option>
+                <option value="rehabilitation">Rehabilitation</option>
+                <option value="competition">Competition Prep</option>
+                <option value="weight_loss">Weight Loss</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Experience Level</label>
+              <select class="select-input" id="edit-experience">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+                <option value="pro">Professional</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Avatar Color</label>
+            <div class="color-picker" id="color-picker">
+              <div
+                class="color-option"
+                data-color="#10b981"
+                style="background: #10b981"
+              ></div>
+              <div
+                class="color-option"
+                data-color="#3b82f6"
+                style="background: #3b82f6"
+              ></div>
+              <div
+                class="color-option"
+                data-color="#8b5cf6"
+                style="background: #8b5cf6"
+              ></div>
+              <div
+                class="color-option"
+                data-color="#ec4899"
+                style="background: #ec4899"
+              ></div>
+              <div
+                class="color-option"
+                data-color="#f59e0b"
+                style="background: #f59e0b"
+              ></div>
+              <div
+                class="color-option"
+                data-color="#ef4444"
+                style="background: #ef4444"
+              ></div>
+              <div
+                class="color-option"
+                data-color="#06b6d4"
+                style="background: #06b6d4"
+              ></div>
+              <div
+                class="color-option"
+                data-color="#84cc16"
+                style="background: #84cc16"
+              ></div>
+            </div>
+          </div>
+
+          <div class="flex gap-md mt-lg">
+            <button class="btn btn-primary" onclick="saveProfile()">
+              <span>💾</span> Save Changes
+            </button>
+            <button class="btn btn-secondary" onclick="toggleEdit()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid mb-xl">
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Your Rank</span>
+            <div class="card-icon card-icon-primary">🏅</div>
+          </div>
+          <div class="stat-value">
+            <span class="rank-badge" id="user-rank">#--</span>
+          </div>
+          <p class="text-muted mt-sm" id="rank-percentile">
+            Complete workouts to rank
+          </p>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Member Since</span>
+            <div class="card-icon card-icon-accent">📅</div>
+          </div>
+          <div class="stat-value stat-value-sm" id="member-since">--</div>
+          <p class="text-muted">days active</p>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Workout Time</span>
+            <div class="card-icon card-icon-warning">⏱️</div>
+          </div>
+          <div class="stat-value stat-value-sm" id="total-time">0m</div>
+          <p class="text-muted">total training</p>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Achievements</span>
+            <div class="card-icon card-icon-error">🏆</div>
+          </div>
+          <div class="stat-value" id="achievement-count">0</div>
+          <p class="text-muted">unlocked</p>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="card mb-xl">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-icon card-icon-warning">🏆</span>
+            Achievements
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="achievement-grid" id="achievements-grid">
+            <div class="achievement-card" style="opacity: 0.4">
+              <div class="achievement-icon">🎯</div>
+              <div class="achievement-name">First Steps</div>
+              <div class="achievement-desc">Complete your first workout</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="stats-grid">
+        <a href="/camera" class="card feature-card">
+          <div class="feature-icon card-icon-primary">🚀</div>
+          <h3 class="feature-title">Start Workout</h3>
+          <p class="feature-description">
+            Begin a new training session and improve your score.
+          </p>
+        </a>
+
+        <a href="/leaderboard" class="card feature-card">
+          <div class="feature-icon card-icon-accent">🏆</div>
+          <h3 class="feature-title">Leaderboard</h3>
+          <p class="feature-description">
+            See how you compare against other athletes.
+          </p>
+        </a>
+
+        <a href="/dashboard" class="card feature-card">
+          <div class="feature-icon card-icon-warning">📊</div>
+          <h3 class="feature-title">View Stats</h3>
+          <p class="feature-description">
+            Detailed analytics and progress tracking.
+          </p>
+        </a>
+
+        <a href="/history" class="card feature-card">
+          <div class="feature-icon card-icon-error">📈</div>
+          <h3 class="feature-title">History</h3>
+          <p class="feature-description">
+            Review all your past workout sessions.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>PosePro v2.0 — AI-Powered Form Analysis</p>
+    </footer>
+
+    <script>
+      let profileData = {};
+      let selectedColor = "#10b981";
+
+      async function loadProfile() {
+        try {
+          const response = await fetch("/api/profile");
+          const data = await response.json();
+
+          if (data.success) {
+            profileData = data.profile;
+            updateProfileUI(data);
+          }
+        } catch (error) {
+          console.error("Error loading profile:", error);
+        }
+      }
+
+      function updateProfileUI(data) {
+        const profile = data.profile;
+        const stats = data.stats || {};
+        const achievements = data.achievements || [];
+        const rank = data.rank || {};
+
+        // Update avatar
+        const avatar = document.getElementById("avatar");
+        avatar.style.background = profile.avatar_color || "#10b981";
+        avatar.textContent = (profile.display_name || "A")[0].toUpperCase();
+        selectedColor = profile.avatar_color || "#10b981";
+
+        // Update profile info
+        document.getElementById("display-name").textContent =
+          profile.display_name || "Athlete";
+        document.getElementById("bio").textContent =
+          profile.bio || "Set up your profile to track your progress!";
+
+        // Update experience badge
+        const expLevel = profile.experience_level || "beginner";
+        const expIcons = {
+          beginner: "🌱",
+          intermediate: "🌿",
+          advanced: "🌳",
+          pro: "👑",
+        };
+        const expNames = {
+          beginner: "Beginner",
+          intermediate: "Intermediate",
+          advanced: "Advanced",
+          pro: "Professional",
+        };
+        document.getElementById("experience-text").textContent =
+          expNames[expLevel] || "Beginner";
+        document.querySelector(
+          "#experience-badge span:first-child"
+        ).textContent = expIcons[expLevel] || "🌱";
+
+        // Update stats
+        document.getElementById("stat-sessions").textContent =
+          stats.total_sessions || 0;
+        document.getElementById("stat-reps").textContent =
+          stats.total_reps || 0;
+        document.getElementById("stat-avg").textContent = stats.avg_score
+          ? stats.avg_score.toFixed(0)
+          : "--";
+        document.getElementById("stat-best").textContent = stats.best_score
+          ? stats.best_score.toFixed(0)
+          : "--";
+
+        // Update rank
+        if (rank.rank) {
+          document.getElementById("user-rank").textContent = `#${rank.rank}`;
+          document.getElementById("rank-percentile").textContent = `Top ${
+            100 - rank.percentile
+          }% of users`;
+        }
+
+        // Update total time
+        const totalTime = stats.total_workout_time || 0;
+        const hours = Math.floor(totalTime / 3600);
+        const mins = Math.floor((totalTime % 3600) / 60);
+        document.getElementById("total-time").textContent =
+          hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+
+        // Member since
+        if (profile.created_at) {
+          const created = new Date(profile.created_at);
+          const now = new Date();
+          const days = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+          document.getElementById("member-since").textContent = days;
+        }
+
+        // Update achievements
+        document.getElementById("achievement-count").textContent =
+          achievements.length;
+        renderAchievements(achievements);
+
+        // Update edit form
+        document.getElementById("edit-name").value = profile.display_name || "";
+        document.getElementById("edit-email").value = profile.email || "";
+        document.getElementById("edit-bio").value = profile.bio || "";
+        document.getElementById("edit-goal").value =
+          profile.fitness_goal || "general";
+        document.getElementById("edit-experience").value =
+          profile.experience_level || "beginner";
+
+        // Update color picker selection
+        document.querySelectorAll(".color-option").forEach((opt) => {
+          opt.classList.toggle("selected", opt.dataset.color === selectedColor);
+        });
+      }
+
+      function renderAchievements(achievements) {
+        const grid = document.getElementById("achievements-grid");
+
+        // All possible achievements
+        const allAchievements = [
+          {
+            id: "first_workout",
+            name: "First Steps",
+            icon: "🎯",
+            description: "Complete your first workout",
+          },
+          {
+            id: "five_sessions",
+            name: "Getting Started",
+            icon: "🌟",
+            description: "Complete 5 workouts",
+          },
+          {
+            id: "ten_sessions",
+            name: "Dedicated",
+            icon: "💪",
+            description: "Complete 10 workouts",
+          },
+          {
+            id: "committed",
+            name: "Committed",
+            icon: "🔥",
+            description: "Complete 25 workouts",
+          },
+          {
+            id: "fifty_reps",
+            name: "Rep Machine",
+            icon: "⚡",
+            description: "Complete 50 total reps",
+          },
+          {
+            id: "hundred_reps",
+            name: "Century Club",
+            icon: "🏆",
+            description: "Complete 100 total reps",
+          },
+          {
+            id: "high_scorer",
+            name: "High Scorer",
+            icon: "🎖️",
+            description: "Score 85+ on a rep",
+          },
+          {
+            id: "perfect_form",
+            name: "Perfect Form",
+            icon: "👑",
+            description: "Score 95+ on a rep",
+          },
+          {
+            id: "consistent",
+            name: "Consistent",
+            icon: "📈",
+            description: "Maintain 75+ average",
+          },
+        ];
+
+        const unlockedIds = new Set(achievements.map((a) => a.id));
+
+        grid.innerHTML = allAchievements
+          .map((ach) => {
+            const unlocked = unlockedIds.has(ach.id);
+            return `
+            <div class="achievement-card" style="${
+              unlocked ? "" : "opacity: 0.4;"
+            }">
+              <div class="achievement-icon">${ach.icon}</div>
+              <div class="achievement-name">${ach.name}</div>
+              <div class="achievement-desc">${ach.description}</div>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      function toggleEdit() {
+        const form = document.getElementById("edit-form");
+        form.classList.toggle("active");
+        window.scrollTo({ top: form.offsetTop - 100, behavior: "smooth" });
+      }
+
+      async function saveProfile() {
+        try {
+          const response = await fetch("/api/profile/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              display_name: document.getElementById("edit-name").value,
+              email: document.getElementById("edit-email").value,
+              bio: document.getElementById("edit-bio").value,
+              fitness_goal: document.getElementById("edit-goal").value,
+              experience_level:
+                document.getElementById("edit-experience").value,
+              avatar_color: selectedColor,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            toggleEdit();
+            loadProfile();
+          } else {
+            alert("Failed to save profile: " + data.error);
+          }
+        } catch (error) {
+          console.error("Error saving profile:", error);
+          alert("Failed to save profile");
+        }
+      }
+
+      // Color picker
+      document.querySelectorAll(".color-option").forEach((opt) => {
+        opt.addEventListener("click", () => {
+          document
+            .querySelectorAll(".color-option")
+            .forEach((o) => o.classList.remove("selected"));
+          opt.classList.add("selected");
+          selectedColor = opt.dataset.color;
+        });
+      });
+
+      // Initialize
+      loadProfile();
+    </script>
+  </body>
+</html>
