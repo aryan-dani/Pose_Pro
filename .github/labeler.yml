@@ -1,0 +1,28 @@
+# Labels for PR Labeler action
+python:
+  - changed-files:
+      - any-glob-to-any-file: "**/*.py"
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "templates/**"
+          - "static/**"
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "docs/**"
+
+database:
+  - changed-files:
+      - any-glob-to-any-file: "database.py"
+
+core:
+  - changed-files:
+      - any-glob-to-any-file: "app.py"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"

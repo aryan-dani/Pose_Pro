@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & Discussions
+    url: https://github.com/yourusername/Pose_Pro/discussions
+    about: Ask questions and discuss features with the community
+  - name: 📖 Documentation
+    url: https://github.com/yourusername/Pose_Pro#readme
+    about: Check the documentation before opening an issue

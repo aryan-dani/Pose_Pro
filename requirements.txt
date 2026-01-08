@@ -1,0 +1,19 @@
+# PosePro Dependencies
+# Python 3.8+ required
+
+# Web Framework
+flask>=2.0.0
+
+# Computer Vision
+opencv-python>=4.5.0
+
+# Pose Detection
+mediapipe>=0.10.0
+
+# Scientific Computing
+numpy>=1.21.0
+
+# Optional: For development
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=4.0.0
