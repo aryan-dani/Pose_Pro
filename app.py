@@ -453,7 +453,6 @@ def update_rep_state(avg_angle, timestamp, frame_metrics):
 
 def process_completed_rep():
     """Process completed rep"""
-    global current_rep_data, current_db_session_id
     
     if not current_rep_data:
         return
@@ -678,7 +677,7 @@ def draw_trajectory_path(img, trajectory, colors, thickness=2):
 
 def start_camera():
     """Start camera capture"""
-    global camera_active, cap, current_frame, current_mesh_frame
+    global camera_active, cap
     
     try:
         # Try platform-appropriate backend
@@ -922,7 +921,6 @@ def camera_loop():
 
 def generate_frames():
     """Generate frames for video streaming"""
-    global current_frame
     
     while True:
         try:
@@ -940,7 +938,6 @@ def generate_frames():
 
 def generate_mesh_frames():
     """Generate mesh frames for video streaming"""
-    global current_mesh_frame
     
     while True:
         try:

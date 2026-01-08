@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
 </p>
 
-<h1 align="center">💪 PosePro</h1>
+<h1 align="center">PosePro</h1>
 
 <p align="center">
   <strong>AI-Powered Real-Time Shoulder Raise Form Analysis</strong>
@@ -18,36 +18,36 @@
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎯 Real-Time Form Analysis
+### Real-Time Form Analysis
 - **Live Camera Tracking** - Pose detection using MediaPipe with background blur
 - **Automatic Rep Counting** - Intelligent phase detection (up → peak → down)
 - **Instant Feedback** - Real-time angle visualization and trajectory tracking
 
-### 📊 Comprehensive Metrics
+### Comprehensive Metrics
 | Metric | Description |
 |--------|-------------|
-| 📐 **Range of Motion** | Measures arm elevation angle (ideal: 70-90°) |
-| ⚖️ **Bilateral Symmetry** | Compares left vs right arm angles |
-| 🎯 **Torso Stability** | Detects body lean or sway |
-| 💪 **Elbow Position** | Monitors elbow angle (ideal: 160-180°) |
-| ⏱️ **Rep Duration** | Tracks timing and smoothness |
+| **Range of Motion** | Measures arm elevation angle (ideal: 70-90°) |
+| **Bilateral Symmetry** | Compares left vs right arm angles |
+| **Torso Stability** | Detects body lean or sway |
+| **Elbow Position** | Monitors elbow angle (ideal: 160-180°) |
+| **Rep Duration** | Tracks timing and smoothness |
 
-### 📈 Progress Tracking
+### Progress Tracking
 - **Performance Dashboard** - Charts, trends, and analytics
 - **Session History** - Review past workouts and rep details
 - **Personal Records** - Track your bests for score and ROM
 - **Leaderboard** - Compete with others (multi-user support)
 - **Achievements** - Unlock badges as you progress
 
-### 🤖 AI Form Assistant
+### AI Form Assistant
 - Chat interface for technique advice and form corrections
 - Personalized recommendations based on your performance
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -90,7 +90,7 @@
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 | Package | Purpose |
 |---------|---------|
@@ -106,7 +106,7 @@ pip install flask opencv-python mediapipe numpy
 
 ---
 
-## 🎮 How to Use
+## How to Use
 
 ### Starting a Workout Session
 
@@ -137,7 +137,7 @@ Each rep is graded on a 100-point scale:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Pose_Pro/
@@ -164,7 +164,7 @@ Pose_Pro/
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -190,7 +190,7 @@ THRESHOLDS = {
 
 ---
 
-## 🌐 API Endpoints
+## API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -205,9 +205,9 @@ THRESHOLDS = {
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
 ### Quick Contribution Steps
 1. Fork the repository
@@ -218,13 +218,13 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [MediaPipe](https://mediapipe.dev/) - Pose detection framework by Google
 - [OpenCV](https://opencv.org/) - Computer vision library
@@ -232,7 +232,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📧 Support
+## Support
 
 Having issues? Here's how to get help:
 
@@ -242,13 +242,3 @@ Having issues? Here's how to get help:
    - Steps to reproduce the problem
    - Expected vs actual behavior
    - Any error messages
-
----
-
-<p align="center">
-  Made with ❤️ for fitness enthusiasts
-</p>
-
-<p align="center">
-  <strong>Perfect your form. Track your progress. Achieve your goals.</strong>
-</p>
