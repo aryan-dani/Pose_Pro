@@ -11,7 +11,8 @@ import hashlib
 from contextlib import contextmanager
 from typing import List, Dict, Optional, Any
 
-DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'shoulder_analyzer.db')
+# Use parent directory (project root) for database file
+DATABASE_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'shoulder_analyzer.db')
 
 def init_database():
     """Initialize the database with required tables"""

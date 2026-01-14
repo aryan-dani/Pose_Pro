@@ -58,7 +58,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/Pose_Pro.git
+   git clone https://github.com/aryan-dani/Pose_Pro.git
    cd Pose_Pro
    ```
 
@@ -85,7 +85,7 @@
 
 5. **Open your browser**
    ```
-   http://localhost:5000
+   http://localhost:5005
    ```
 
 ---
@@ -141,25 +141,44 @@ Each rep is graded on a 100-point scale:
 
 ```
 Pose_Pro/
-├── app.py              # Main Flask application & pose analysis logic
-├── database.py         # SQLite database operations
+├── app.py                  # Main Flask application & routes
+├── config.py               # Configuration constants & thresholds
+├── database.py             # SQLite database operations
+├── pose_analyzer.py        # Core pose analysis & scoring logic
+├── chatbot.py              # AI form assistant chatbot
+├── models.py               # Data models (RepData, SessionData)
+├── camera_handler.py       # Camera capture & video streaming
 ├── static/
 │   └── css/
-│       └── style.css   # Application styling
+│       └── style.css       # Application styling
 ├── templates/
-│   ├── index.html      # Home page
-│   ├── camera.html     # Live analysis view
-│   ├── dashboard.html  # Analytics dashboard
-│   ├── history.html    # Session history
-│   ├── leaderboard.html# Competitive rankings
-│   ├── profile.html    # User profile
-│   ├── chat.html       # AI form assistant
-│   └── upload.html     # Video upload
-├── requirements.txt    # Python dependencies
-├── .gitignore          # Git ignore rules
-├── LICENSE             # MIT License
-├── README.md           # This file
-└── CONTRIBUTING.md     # Contribution guidelines
+│   ├── index.html          # Home page
+│   ├── camera.html         # Live analysis view
+│   ├── dashboard.html      # Analytics dashboard
+│   ├── history.html        # Session history
+│   ├── leaderboard.html    # Competitive rankings
+│   ├── profile.html        # User profile
+│   ├── chat.html           # AI form assistant
+│   └── upload.html         # Video upload
+├── .github/
+│   ├── ISSUE_TEMPLATE/     # Bug report & feature request templates
+│   │   ├── bug_report.yml
+│   │   ├── feature_request.yml
+│   │   └── config.yml
+│   ├── workflows/          # CI/CD workflows
+│   │   ├── ci.yml
+│   │   ├── pr-labeler.yml
+│   │   └── stale.yml
+│   ├── labeler.yml
+│   └── PULL_REQUEST_TEMPLATE.md
+├── requirements.txt        # Python dependencies
+├── .gitignore              # Git ignore rules
+├── LICENSE                 # MIT License
+├── README.md               # This file
+├── CONTRIBUTING.md         # Contribution guidelines
+├── CHANGELOG.md            # Version history
+├── CODE_OF_CONDUCT.md      # Community guidelines
+└── SECURITY.md             # Security policy
 ```
 
 ---
@@ -175,7 +194,7 @@ Pose_Pro/
 
 ### Detection Thresholds
 
-Thresholds can be adjusted in `app.py`:
+Thresholds can be adjusted in `config.py`:
 
 ```python
 THRESHOLDS = {
@@ -184,7 +203,7 @@ THRESHOLDS = {
     'rep_end': 12.0,          # Angle to end rep
     'ideal_rom_min': 50.0,    # Ideal ROM minimum
     'ideal_rom_max': 90.0,    # Ideal ROM maximum
-    # ... more in app.py
+    # ... more in config.py
 }
 ```
 
@@ -236,7 +255,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Having issues? Here's how to get help:
 
-1. Check the [Issues](https://github.com/yourusername/Pose_Pro/issues) page
+1. Check the [Issues](https://github.com/aryan-dani/Pose_Pro/issues) page
 2. Create a new issue with:
    - Your OS and Python version
    - Steps to reproduce the problem

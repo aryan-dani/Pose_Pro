@@ -1,6 +1,6 @@
 # Contributing to PosePro
 
-First off, thank you for considering contributing to PosePro! 🎉
+First off, thank you for considering contributing to PosePro!
 
 This document provides guidelines and steps for contributing. Following these guidelines helps communicate that you respect the time of the developers managing and developing this open source project.
 
@@ -48,14 +48,14 @@ Before you begin, ensure you have:
    ```
 3. **Add the upstream remote**:
    ```bash
-   git remote add upstream https://github.com/ORIGINAL_OWNER/Pose_Pro.git
+   git remote add upstream https://github.com/aryan-dani/Pose_Pro.git
    ```
 
 ---
 
 ## How Can I Contribute?
 
-### 🐛 Reporting Bugs
+### Reporting Bugs
 
 Before creating bug reports, please check existing issues to avoid duplicates.
 
@@ -72,7 +72,7 @@ Before creating bug reports, please check existing issues to avoid duplicates.
   - Browser (for UI issues)
   - Webcam model (for camera issues)
 
-### 💡 Suggesting Features
+### Suggesting Features
 
 Feature suggestions are welcome! Please include:
 
@@ -80,7 +80,7 @@ Feature suggestions are welcome! Please include:
 - **Use case** - Why this would be useful
 - **Possible implementation** - Any ideas on how it could work
 
-### 📝 Improving Documentation
+### Improving Documentation
 
 Documentation improvements are always appreciated:
 
@@ -89,7 +89,7 @@ Documentation improvements are always appreciated:
 - Improve code comments
 - Translate documentation
 
-### 💻 Contributing Code
+### Contributing Code
 
 Look for issues labeled:
 - `good first issue` - Great for newcomers
@@ -117,20 +117,13 @@ Look for issues labeled:
    pip install -r requirements.txt
    ```
 
-3. **Install development dependencies** (if any):
-   ```bash
-   pip install -r requirements-dev.txt  # If available
-   ```
-
-4. **Run the application**:
+3. **Run the application**:
    ```bash
    python app.py
    ```
 
-5. **Run tests** (if available):
-   ```bash
-   python -m pytest tests/
-   ```
+4. **Access the app**:
+   Open `http://localhost:5005` in your browser
 
 ---
 
@@ -223,6 +216,23 @@ def calculate_angle(point_a, point_b, point_c):
     # Implementation...
 ```
 
+### Project Structure
+
+When adding new features, follow the existing modular structure:
+
+```
+Pose_Pro/
+├── app.py              # Flask routes and main application
+├── config.py           # Configuration constants
+├── database.py         # Database operations
+├── pose_analyzer.py    # Pose analysis logic
+├── chatbot.py          # Chatbot functionality
+├── models.py           # Data models
+├── camera_handler.py   # Camera and video handling
+├── static/css/         # Stylesheets
+└── templates/          # HTML templates
+```
+
 ### HTML/CSS Style
 
 - Use **semantic HTML5** elements
@@ -236,21 +246,6 @@ def calculate_angle(point_a, point_b, point_c):
 - Add **comments** for complex logic
 - Handle **errors** gracefully
 - Use **async/await** for asynchronous operations
-
----
-
-## Project Structure
-
-When adding new features, follow the existing structure:
-
-```
-Pose_Pro/
-├── app.py              # Main app - add routes and logic here
-├── database.py         # Database operations
-├── static/css/         # Add styles here
-├── templates/          # Add HTML templates here
-└── tests/              # Add tests here (if applicable)
-```
 
 ---
 
@@ -269,8 +264,8 @@ Contributors will be:
 
 ---
 
-## Thank You! 🙏
+## Thank You!
 
 Your contributions make PosePro better for everyone. Whether it's a bug fix, new feature, or documentation improvement - every contribution matters!
 
-Happy coding! 💪
+Happy coding!
